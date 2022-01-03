@@ -3,13 +3,13 @@ module.exports = {
   parser: '@typescript-eslint/parser',
   plugins: [
     '@typescript-eslint',
+    'prettier'
   ],
   extends: [
     'eslint:recommended',
     'plugin:react/recommended',
     'plugin:@typescript-eslint/recommended',
-    'airbnb',
-    'prettier'
+    'airbnb'
   ],
   settings: {
     'import/resolver': {
@@ -34,7 +34,10 @@ module.exports = {
     'react/function-component-definition': [
       2,
       { namedComponents: ['function-declaration', 'arrow-function'] },
-    ]
+    ],
+    'prettier/prettier': 'error',
+    'react/jsx-one-expression-per-line': 0,
+    'object-curly-newline': 0
   },
   env: {
     'browser': true,
