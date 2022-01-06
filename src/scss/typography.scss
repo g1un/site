@@ -1,0 +1,16 @@
+@import 'variables';
+@import 'mixins';
+
+.h2 {
+  @include f1-700();
+  color: $black;
+  font-size: 1.125rem;
+  line-height: 24/16+rem;
+}
+
+.p1 {
+  @include f1-400();
+  color: $black;
+  font-size: 1rem;
+  line-height: 20/16+em;
+}

@@ -1,0 +1,24 @@
+@import 'src/scss/variables';
+
+.table {
+  border: 0;
+  border-collapse: collapse;
+  flex: 1 1 auto;
+  margin: 0;
+  min-width: 0;
+  padding: 0;
+  table-layout: fixed;
+  width: 100%;
+
+  td {
+    border: 0;
+    overflow: hidden;
+    padding: 0.25rem 0;
+    text-overflow: ellipsis;
+
+    &:first-child {
+      padding-right: 0.5rem;
+      width: 4rem;
+    }
+  }
+}

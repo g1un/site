@@ -1,0 +1,68 @@
+@import 'src/scss/variables';
+
+.item {
+  align-items: center;
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  min-height: 2rem;
+  overflow: hidden;
+  transition: flex 0.5s;
+
+  &:not(:last-child) {
+    border-bottom: 1/16+rem solid $black;
+  }
+
+  &.Active {
+    flex: 1 1 auto;
+  }
+}
+
+.header {
+  align-items: center;
+  border-bottom: 1/16+rem solid $black;
+  display: flex;
+  justify-content: center;
+  margin-bottom: -1/16+rem;
+  width: 100%;
+}
+
+.item.Active .header {
+  margin-bottom: 0;
+}
+
+.link {
+  border-bottom: 1/16+rem solid transparent;
+  color: $black;
+  flex: 0 0 auto;
+  font-size: 1rem;
+  line-height: 20/16+em;
+  margin: 0 0 6/16+rem;
+  opacity: 0.67;
+  padding: 6/16+rem 0 0;
+  text-decoration: none;
+  transition: opacity 0.25s, border 0.25s;
+
+  &:hover,
+  &.Active {
+    border-bottom-color: $black;
+    opacity: 1;
+  }
+}
+
+.content {
+  flex: 1 1 auto;
+  overflow: auto;
+  width: 100%;
+
+  &.Hidden {
+    display: none;
+  }
+}
+
+.spinner {
+  align-items: center;
+  display: flex;
+  flex: 1 1 auto;
+  opacity: 0.67;
+}

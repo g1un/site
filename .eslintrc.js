@@ -7,11 +7,18 @@ module.exports = {
   ],
   extends: [
     'eslint:recommended',
+    'plugin:import/recommended',
+    'plugin:import/typescript',
     'plugin:react/recommended',
     'plugin:@typescript-eslint/recommended',
-    'airbnb'
+    'airbnb',
+    'prettier'
   ],
   settings: {
+    'import/extensions': ['.js', '.jsx', '.ts', '.tsx'],
+    'import/parsers': {
+      '@typescript-eslint/parser': ['.ts', '.tsx']
+    },
     'import/resolver': {
       'node': {
         'extensions': ['.js', '.jsx', '.ts', '.tsx']
@@ -19,6 +26,7 @@ module.exports = {
     }
   },
   rules: {
+    'import/no-unresolved': 0,
     'import/prefer-default-export': 0,
     'react/jsx-filename-extension': [2, { 'extensions': ['.js', '.jsx', '.ts', '.tsx'] }],
     'import/extensions': [
@@ -37,7 +45,11 @@ module.exports = {
     ],
     'prettier/prettier': 'error',
     'react/jsx-one-expression-per-line': 0,
-    'object-curly-newline': 0
+    'object-curly-newline': 0,
+    'default-param-last': 0,
+    'no-unused-vars': 'off',
+    '@typescript-eslint/no-unused-vars': ['error'],
+    'react/require-default-props': 0
   },
   env: {
     'browser': true,

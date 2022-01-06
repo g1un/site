@@ -1,0 +1,33 @@
+@import 'src/scss/variables';
+
+.container {
+  align-items: stretch;
+  display: flex;
+  flex-direction: column;
+  padding: 0 1rem;
+
+  &:not(:last-child) {
+    border-bottom: 1/16+rem solid rgba($black, 0.25);
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+  }
+}
+
+.image {
+  align-self: center;
+  border-radius: 0.25rem;
+  box-shadow: 0 0 0.75rem 0.125rem rgba($black, 0.125);
+  line-height: 0;
+  margin-bottom: 1rem;
+  max-width: 20rem;
+  overflow: hidden;
+  width: 100%;
+
+  img {
+    width: 100%;
+  }
+}
+
+.desc {
+  margin-bottom: 1rem;
+}

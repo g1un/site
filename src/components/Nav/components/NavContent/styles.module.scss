@@ -1,0 +1,10 @@
+.container {
+  align-items: stretch;
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  margin: 0 auto;
+  max-width: 540/16+rem;
+  padding: 1.5rem 1rem 1rem;
+  width: 100%;
+}
