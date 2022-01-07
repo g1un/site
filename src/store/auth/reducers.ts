@@ -3,11 +3,11 @@ import { reducerFromMap } from 'utils/actions';
 import { authConstants } from './constants';
 
 export interface AuthState {
-  isAuthorized: boolean;
+  isAuthorized: boolean | null;
 }
 
 const defaultAuthState: AuthState = {
-  isAuthorized: false,
+  isAuthorized: null,
 };
 
 function setAuthorized(state: AuthState, action: Action<boolean>): AuthState {

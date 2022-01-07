@@ -3,24 +3,22 @@ import React, { useEffect, useState } from 'react';
 import { API } from 'api';
 import { Work } from 'api/Works';
 import { NavContent } from 'components/Nav/components/NavContent';
+import { connect } from 'react-redux';
 import { WorkItem } from './components/Work';
+import { appActions, SetPageLoading } from '../../store/app/actions';
 
-interface Props {
-  setLoaded?: (isLoaded: boolean) => void;
-}
+type Props = SetPageLoading;
 
-export const Works = ({ setLoaded }: Props) => {
+const WorksComponent = ({ setPageLoading }: Props) => {
   const [works, setWorks] = useState<Work[] | null>(null);
 
   useEffect(() => {
     (async () => {
       const response = await API.Works.getWorks();
       setWorks(response);
-      if (setLoaded) {
-        setLoaded(true);
-      }
+      setPageLoading(false);
     })();
-  }, [setLoaded]);
+  }, [setPageLoading]);
 
   return (
     <NavContent>
@@ -32,3 +30,9 @@ export const Works = ({ setLoaded }: Props) => {
     </NavContent>
   );
 };
+
+const mapActions = {
+  setPageLoading: appActions.setPageLoading,
+};
+
+export const Works = connect(null, mapActions)(WorksComponent);

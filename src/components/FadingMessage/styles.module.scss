@@ -1,0 +1,12 @@
+@import 'src/scss/variables';
+@import 'src/scss/mixins';
+
+.message {
+  @include p1();
+  margin-top: 1rem;
+  text-align: center;
+
+  &.Error {
+    color: $red;
+  }
+}

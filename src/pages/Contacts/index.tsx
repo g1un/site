@@ -3,7 +3,9 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { NavContent } from 'components/Nav/components/NavContent';
 import { Contacts as ContactsInterface } from 'api/Contacts';
 import { API } from 'api';
+import { connect } from 'react-redux';
 import styles from './styles.module.scss';
+import { appActions, SetPageLoading } from '../../store/app/actions';
 
 const CONTACTS_MAP: { [key in keyof ContactsInterface]: string } = {
   email: 'Email',
@@ -12,22 +14,18 @@ const CONTACTS_MAP: { [key in keyof ContactsInterface]: string } = {
   github: 'Github',
 };
 
-interface Props {
-  setLoaded?: (isLoaded: boolean) => void;
-}
+type Props = SetPageLoading;
 
-export const Contacts = ({ setLoaded }: Props) => {
+export const ContactsComponent = ({ setPageLoading }: Props) => {
   const [contacts, setContacts] = useState<ContactsInterface | null>(null);
 
   useEffect(() => {
     (async () => {
       const response = await API.Contacts.getContacts();
       setContacts(response);
-      if (setLoaded) {
-        setLoaded(true);
-      }
+      setPageLoading(false);
     })();
-  }, [setLoaded]);
+  }, [setPageLoading]);
 
   const renderValue = useCallback((key: keyof ContactsInterface, value: string) => {
     switch (key) {
@@ -69,3 +67,9 @@ export const Contacts = ({ setLoaded }: Props) => {
     </NavContent>
   );
 };
+
+const mapActions = {
+  setPageLoading: appActions.setPageLoading,
+};
+
+export const Contacts = connect(null, mapActions)(ContactsComponent);

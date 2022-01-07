@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
 import { connect } from 'react-redux';
 
@@ -8,24 +8,29 @@ import { AppState } from 'store';
 import 'scss/app.scss';
 
 interface Props {
-  isAuthorized: boolean;
+  isAuthorized: boolean | null;
 }
 
 const AppComponent = (props: Props) => {
   const { isAuthorized } = props;
 
+  const currentRoutes = useMemo(
+    () => routes.filter(({ isPrivate }: RouteType) => isAuthorized !== false || !isPrivate),
+    [isAuthorized],
+  );
+
   return (
     <BrowserRouter>
       <Routes>
-        {routes
-          .filter(({ isPrivate }: RouteType) => !isPrivate || isAuthorized)
-          .map(({ path, component, isVisible }) => (
-            <Route
-              key={path}
-              path={path}
-              element={isVisible !== false ? <Nav>{component}</Nav> : component}
-            />
-          ))}
+        {currentRoutes.map(({ path, component, isVisible, isPrivate }) => (
+          <Route
+            key={path}
+            path={path}
+            element={
+              isVisible !== false ? <Nav isPrivateNav={isPrivate}>{component}</Nav> : component
+            }
+          />
+        ))}
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </BrowserRouter>

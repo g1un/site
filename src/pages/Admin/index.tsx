@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { Navigate } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import { NavItem } from 'components/Nav/components/NavItem';
@@ -6,32 +7,41 @@ import { API } from 'api';
 import { authActions, SetAuthorized } from 'store/auth/actions';
 import { AppState } from 'store';
 import { Login } from './components/Login';
+import { appActions, SetPageLoading } from 'store/app/actions';
 
-interface Props extends SetAuthorized {
-  isAuthorized: boolean;
+interface Props extends SetAuthorized, SetPageLoading {
+  isAuthorized: boolean | null;
+  children?: React.ReactElement;
 }
 
 export const AdminComponent = (props: Props) => {
-  const { setAuthorized, isAuthorized } = props;
+  const { setPageLoading, setAuthorized, isAuthorized, children } = props;
 
   const jwt = localStorage.getItem('jwt');
 
   useEffect(() => {
     if (jwt) {
       (async () => {
+        setPageLoading(true);
         const response = await API.Admin.checkAuth(jwt);
         if (response === 200) {
           setAuthorized(true);
         } else {
           setAuthorized(false);
         }
+        setPageLoading(false);
       })();
+    } else {
+      setAuthorized(false);
+      setPageLoading(false);
     }
-  }, [setAuthorized, jwt]);
+  }, [setPageLoading, setAuthorized]);
 
-  return (
-    <NavItem hasNoLoading title="Admin" path="/admin">
-      {isAuthorized ? <>Control Panel</> : <Login />}
+  return isAuthorized && children ? (
+    children
+  ) : (
+    <NavItem title="Admin" path="/admin">
+      {isAuthorized ? <Navigate to="/admin/skills" /> : <Login />}
     </NavItem>
   );
 };
@@ -41,6 +51,7 @@ const mapState = (state: AppState) => ({
 });
 
 const mapActions = {
+  setPageLoading: appActions.setPageLoading,
   setAuthorized: authActions.setAuthorized,
 };
 

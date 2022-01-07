@@ -3,7 +3,9 @@ import React from 'react';
 import { About } from 'pages/About';
 import { Works } from 'pages/Works';
 import { Contacts } from 'pages/Contacts';
-import { Admin } from '../pages/Admin';
+import { Admin } from 'pages/Admin';
+import { AdminWorks } from '../pages/AdminWorks';
+import { AdminContacts } from '../pages/AdminContacts';
 
 export type Route = {
   path: string;
@@ -37,8 +39,24 @@ export const routes: Route[] = [
   },
   {
     path: '/admin/skills',
-    component: <Admin />,
-    title: 'Admin',
+    component: (
+      <Admin>
+        <About isEdit />
+      </Admin>
+    ),
+    title: 'Edit Skills',
+    isPrivate: true,
+  },
+  {
+    path: '/admin/works',
+    component: <AdminWorks />,
+    title: 'Edit Works',
+    isPrivate: true,
+  },
+  {
+    path: '/admin/contacts',
+    component: <AdminContacts />,
+    title: 'Edit Contacts',
     isPrivate: true,
   },
 ];

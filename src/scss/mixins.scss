@@ -1,3 +1,5 @@
+@import 'variables';
+
 @mixin f1-400() {
   font-family: 'Lato', sans-serif;
   font-weight: 400;
@@ -6,4 +8,12 @@
 @mixin f1-700() {
   font-family: 'Lato', sans-serif;
   font-weight: 700;
+}
+
+// typography
+@mixin p1() {
+  @include f1-400();
+  color: $black;
+  font-size: 1rem;
+  line-height: 20/16+em;
 }

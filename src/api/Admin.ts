@@ -17,7 +17,7 @@ export const authorize = async (data: Authorize): Promise<AuthorizeResponse> => 
     const response: AxiosResponse<AuthorizeResponse> = await instance.post('/user/login', data);
     return response.data;
   } catch (e) {
-    return e.response?.data;
+    return e.response.data;
   }
 };
 

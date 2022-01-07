@@ -1,28 +1,32 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
+import { connect } from 'react-redux';
 
+import { Spinner } from 'components/Spinner';
+import { AppState } from 'store';
+import { appActions, SetPageLoading } from 'store/app/actions';
 import styles from './styles.module.scss';
-import { Spinner } from '../../../Spinner';
 
-interface Props {
-  path: string;
+interface Props extends SetPageLoading {
+  path?: string;
   title: string;
-  hasNoLoading?: boolean;
+  isPageLoading: boolean;
   children: React.ReactNode;
 }
 
-export const NavItem = ({ path, title, hasNoLoading, children }: Props) => {
+const NavItemComponent = (props: Props) => {
+  const { path, title, setPageLoading, isPageLoading, children } = props;
+
   const { pathname } = useLocation();
 
-  const isActive = useMemo(() => pathname === path, [pathname, path]);
+  const isActive = useMemo(() => (path === undefined ? true : pathname === path), [pathname, path]);
 
   const [isOpen, setOpen] = useState<boolean>(isActive);
-  const [isLoaded, setLoaded] = useState<boolean>(false);
 
   useEffect(() => {
     if (!isActive) {
       setOpen(false);
-      setLoaded(false);
+      setPageLoading(true);
     }
   }, [isActive]);
 
@@ -33,37 +37,45 @@ export const NavItem = ({ path, title, hasNoLoading, children }: Props) => {
   }, [isActive]);
 
   return (
-    <li
+    <div
       className={`${styles.item} ${isActive ? styles.Active : ''}`}
       onTransitionEnd={onTransitionEnd}
     >
       <header className={styles.header}>
-        <NavLink
-          to={path}
-          className={`${styles.link} ${isActive ? styles.Active : ''}`}
-          onTransitionEnd={(e) => e.stopPropagation()}
-        >
-          {title}
-        </NavLink>
-      </header>
-      {(hasNoLoading || isActive) && (
-        <>
-          <div
-            className={`${styles.content} ${
-              !hasNoLoading && (!isOpen || !isLoaded) ? styles.Hidden : ''
-            }`}
+        {path ? (
+          <NavLink
+            to={path}
+            className={`${styles.link} ${isActive ? styles.Active : ''}`}
+            onTransitionEnd={(e) => e.stopPropagation()}
           >
-            {React.Children.map(children, (child) =>
-              React.isValidElement(child) ? React.cloneElement(child, { setLoaded }) : null,
-            )}
+            {title}
+          </NavLink>
+        ) : (
+          <h2 className={`${styles.link} ${styles.Active}`}>{title}</h2>
+        )}
+      </header>
+      {isActive && (
+        <>
+          <div className={`${styles.content} ${!isOpen || isPageLoading ? styles.Hidden : ''}`}>
+            {children}
           </div>
-          {!hasNoLoading && (!isOpen || !isLoaded) && (
+          {(!isOpen || isPageLoading) && (
             <div className={styles.spinner}>
               <Spinner />
             </div>
           )}
         </>
       )}
-    </li>
+    </div>
   );
 };
+
+const mapState = (state: AppState) => ({
+  isPageLoading: state.app.isPageLoading,
+});
+
+const mapActions = {
+  setPageLoading: appActions.setPageLoading,
+};
+
+export const NavItem = connect(mapState, mapActions)(NavItemComponent);

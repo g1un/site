@@ -1,10 +1,17 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
+import { connect } from 'react-redux';
 
 import { NavContent } from 'components/Nav/components/NavContent';
 import { API } from 'api';
+import { authActions, SetAuthorized } from 'store/auth/actions';
+import { FadingMessage } from 'components/FadingMessage';
 import styles from './styles.module.scss';
 
-export const Login = () => {
+type Props = SetAuthorized;
+
+const LoginComponent = (props: Props) => {
+  const { setAuthorized } = props;
+
   const [credentials, setCredentials] = useState<{ email: string; password: string }>({
     email: '',
     password: '',
@@ -29,11 +36,13 @@ export const Login = () => {
       const { message, token } = await API.Admin.authorize(credentials);
       if (token) {
         localStorage.setItem('jwt', token);
+        setAuthorized(true);
       } else {
         setError(message);
+        setAuthorized(false);
       }
     },
-    [credentials],
+    [credentials, setAuthorized],
   );
 
   const isDisabled = useMemo(
@@ -41,13 +50,7 @@ export const Login = () => {
     [credentials],
   );
 
-  useEffect(() => {
-    if (error) {
-      setTimeout(() => {
-        setError(null);
-      }, 5000);
-    }
-  }, [error]);
+  const hideError = useCallback(() => setError(null), []);
 
   return (
     <NavContent>
@@ -70,8 +73,14 @@ export const Login = () => {
         <button type="submit" disabled={isDisabled}>
           Login
         </button>
-        {error && <p className={`p1 ${styles.error}`}>{error}</p>}
+        <FadingMessage message={error} type="error" close={hideError} />
       </form>
     </NavContent>
   );
 };
+
+const mapActions = {
+  setAuthorized: authActions.setAuthorized,
+};
+
+export const Login = connect(null, mapActions)(LoginComponent);
