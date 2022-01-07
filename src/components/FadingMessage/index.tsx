@@ -2,10 +2,12 @@ import React, { useEffect, useMemo } from 'react';
 
 import styles from './styles.module.scss';
 
+export type FadingMessageTypes = 'error' | 'success';
+
 interface Props {
   className?: string;
   message: string | null;
-  type?: string;
+  type?: FadingMessageTypes;
   close: () => void;
 }
 
@@ -14,6 +16,8 @@ export const FadingMessage = ({ className = '', message, type, close }: Props) =
     switch (type) {
       case 'error':
         return styles.Error;
+      case 'success':
+        return styles.Success;
       default:
         return '';
     }

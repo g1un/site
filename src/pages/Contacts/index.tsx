@@ -14,9 +14,11 @@ const CONTACTS_MAP: { [key in keyof ContactsInterface]: string } = {
   github: 'Github',
 };
 
-type Props = SetPageLoading;
+interface Props extends SetPageLoading {
+  isEdit?: boolean;
+}
 
-export const ContactsComponent = ({ setPageLoading }: Props) => {
+export const ContactsComponent = ({ isEdit, setPageLoading }: Props) => {
   const [contacts, setContacts] = useState<ContactsInterface | null>(null);
 
   useEffect(() => {

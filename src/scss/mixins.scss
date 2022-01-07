@@ -17,3 +17,18 @@
   font-size: 1rem;
   line-height: 20/16+em;
 }
+
+@mixin p1-700() {
+  @include f1-700();
+  color: $black;
+  font-size: 1rem;
+  line-height: 20/16+em;
+}
+
+// reset-button
+@mixin reset-btn() {
+  padding: 0;
+  border: none;
+  cursor: pointer;
+  background-color: transparent;
+}

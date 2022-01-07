@@ -4,8 +4,6 @@ import { About } from 'pages/About';
 import { Works } from 'pages/Works';
 import { Contacts } from 'pages/Contacts';
 import { Admin } from 'pages/Admin';
-import { AdminWorks } from '../pages/AdminWorks';
-import { AdminContacts } from '../pages/AdminContacts';
 
 export type Route = {
   path: string;
@@ -49,13 +47,13 @@ export const routes: Route[] = [
   },
   {
     path: '/admin/works',
-    component: <AdminWorks />,
+    component: <Admin><Works isEdit /></Admin>,
     title: 'Edit Works',
     isPrivate: true,
   },
   {
     path: '/admin/contacts',
-    component: <AdminContacts />,
+    component: <Admin><Contacts isEdit /></Admin>,
     title: 'Edit Contacts',
     isPrivate: true,
   },

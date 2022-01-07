@@ -5,8 +5,8 @@ import { API } from 'api';
 import { Skills } from 'api/Skills';
 import { NavContent } from 'components/Nav/components/NavContent';
 import { appActions, SetPageLoading } from 'store/app/actions';
+import { FadingMessage, FadingMessageTypes } from '../../components/FadingMessage';
 import styles from './styles.module.scss';
-import { FadingMessage } from '../../components/FadingMessage';
 
 interface Props extends SetPageLoading {
   isEdit?: boolean;
@@ -16,7 +16,7 @@ const AboutComponent = (props: Props) => {
   const { isEdit, setPageLoading } = props;
 
   const [skills, setSkills] = useState<Skills | null>(null);
-  const [message, setMessage] = useState<{ text: string; type: string } | null>(null);
+  const [message, setMessage] = useState<{ text: string; type?: FadingMessageTypes } | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -33,7 +33,7 @@ const AboutComponent = (props: Props) => {
   const saveSkills = useCallback(async () => {
     if (skills) {
       const response = await API.Skills.updateSkills(skills);
-      let type = '';
+      let type: FadingMessageTypes | undefined;
       if (response.status !== 200) {
         type = 'error';
       }

@@ -9,4 +9,8 @@
   &.Error {
     color: $red;
   }
+
+  &.Success {
+    color: $green;
+  }
 }
