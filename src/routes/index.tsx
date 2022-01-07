@@ -47,13 +47,21 @@ export const routes: Route[] = [
   },
   {
     path: '/admin/works',
-    component: <Admin><Works isEdit /></Admin>,
+    component: (
+      <Admin>
+        <Works isEdit />
+      </Admin>
+    ),
     title: 'Edit Works',
     isPrivate: true,
   },
   {
     path: '/admin/contacts',
-    component: <Admin><Contacts isEdit /></Admin>,
+    component: (
+      <Admin>
+        <Contacts />
+      </Admin>
+    ),
     title: 'Edit Contacts',
     isPrivate: true,
   },

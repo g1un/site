@@ -6,8 +6,8 @@ import { NavItem } from 'components/Nav/components/NavItem';
 import { API } from 'api';
 import { authActions, SetAuthorized } from 'store/auth/actions';
 import { AppState } from 'store';
-import { Login } from './components/Login';
 import { appActions, SetPageLoading } from 'store/app/actions';
+import { Login } from './components/Login';
 
 interface Props extends SetAuthorized, SetPageLoading {
   isAuthorized: boolean | null;

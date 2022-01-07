@@ -40,42 +40,49 @@ export const WorkItem = (props: Props) => {
 
   const descLines = useMemo(() => descEn.split('\n'), [descEn]);
 
-  const onImageChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files) {
-      const reader = new FileReader();
-      reader.onload = ({target}) => {
-        if(target?.result) {
-          setWork({
-            imageSrc: target.result as string,
-            imageFile: (event.target.files as FileList)[0],
-          });
-        }
+  const onImageChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      if (event.target.files) {
+        const reader = new FileReader();
+        reader.onload = ({ target }) => {
+          if (target?.result) {
+            setWork({
+              imageSrc: target.result as string,
+              imageFile: (event.target.files as FileList)[0],
+            });
+          }
+        };
+        reader.readAsDataURL(event.target.files[0]);
       }
-      reader.readAsDataURL(event.target.files[0]);
-    }
-  }, [setWork]);
+    },
+    [setWork],
+  );
 
   const imageSrcUrl = useMemo(() => {
     // check if is base64 string
     if (/data:image\/[^;]+;base64[^"]+/i.test(imageSrc)) {
       return imageSrc;
-    } else {
-      return `${origin}/${imageSrc}`;
     }
+    return `${origin}/${imageSrc}`;
   }, [origin, imageSrc]);
 
-  const onChange = useCallback((name: keyof Work) => ({ target: { value }}: { target: { value: string } }) => {
-    setWork({ [name]: value });
-  }, [setWork]);
+  const onChange = useCallback(
+    (name: keyof Work) =>
+      ({ target: { value } }: { target: { value: string } }) => {
+        setWork({ [name]: value });
+      },
+    [setWork],
+  );
 
-  const changedWork = useMemo(() => {
-    return {
+  const changedWork = useMemo(
+    () => ({
       ...(address !== initialWork?.address ? { address } : {}),
       ...(descEn !== initialWork?.descEn ? { descEn } : {}),
       ...(imageFile ? { imageFile } : {}),
       ...(repo !== initialWork?.repo ? { repo } : {}),
-    };
-  }, [initialWork, address, descEn, imageFile, repo]);
+    }),
+    [initialWork, address, descEn, imageFile, repo],
+  );
 
   const isWorkChanged = useMemo(() => !!Object.keys(changedWork).length, [changedWork]);
 
@@ -107,9 +114,10 @@ export const WorkItem = (props: Props) => {
           <img src={`${origin}/${imageSrc}`} alt="" />
         </div>
       ) : (
-        <label className={`${styles.image} ${styles.Edit}`}>
+        <label className={`${styles.image} ${styles.Edit}`} htmlFor="edit-work-image">
           <input
             className={styles.imageInput}
+            name="edit-work-image"
             type="file"
             onChange={onImageChange}
           />
@@ -139,18 +147,14 @@ export const WorkItem = (props: Props) => {
         </>
       ) : (
         <>
-          <span className="p1">
-            Edit Description
-          </span>
+          <span className="p1">Edit Description</span>
           <textarea
             className={styles.textarea}
             placeholder="Description"
             value={descEn}
             onChange={onChange('descEn')}
           />
-          <span className="p1">
-            Edit Site Address
-          </span>
+          <span className="p1">Edit Site Address</span>
           <input
             className={styles.input}
             type="text"
@@ -158,9 +162,7 @@ export const WorkItem = (props: Props) => {
             value={address}
             onChange={onChange('address')}
           />
-          <span className="p1">
-            Edit Repository Link
-          </span>
+          <span className="p1">Edit Repository Link</span>
           <input
             className={styles.input}
             type="text"
@@ -169,18 +171,27 @@ export const WorkItem = (props: Props) => {
             onChange={onChange('repo')}
           />
           <div className={styles.buttons}>
-            <button className="btn" type="button" disabled={!isWorkChanged && isLoading} onClick={saveWork}>
+            <button
+              className="btn"
+              type="button"
+              disabled={!isWorkChanged || isLoading}
+              onClick={saveWork}
+            >
               Save
             </button>
           </div>
-          <FadingMessage message={message?.text || null} type={message?.type} close={closeMessage} />
+          <FadingMessage
+            message={message?.text || null}
+            type={message?.type}
+            close={closeMessage}
+          />
         </>
       )}
-      {isLoading &&
+      {isLoading && (
         <div className={styles.spinner}>
           <Spinner />
         </div>
-      }
+      )}
     </div>
   );
 };

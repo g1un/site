@@ -4,8 +4,8 @@ import { connect } from 'react-redux';
 import { API } from 'api';
 import { Work } from 'api/Works';
 import { NavContent } from 'components/Nav/components/NavContent';
-import { WorkItem } from './components/Work';
 import { appActions, SetPageLoading } from 'store/app/actions';
+import { WorkItem } from './components/Work';
 
 interface Props extends SetPageLoading {
   isEdit?: boolean;
@@ -24,17 +24,26 @@ const WorksComponent = ({ isEdit, setPageLoading }: Props) => {
     })();
   }, [setPageLoading]);
 
-  const setWork = useCallback((_id: string, handler: Dispatch<SetStateAction<Work[] | null>>) => (updatedWork: Partial<Work>) => {
-    handler(prevState => prevState ? prevState.map(work => {
-      if (work._id === _id) {
-        return {
-          ...work,
-          ...updatedWork,
-        };
-      }
-      return work;
-    }) : null);
-  }, []);
+  const setWork = useCallback(
+    (_id: string, handler: Dispatch<SetStateAction<Work[] | null>>) =>
+      (updatedWork: Partial<Work>) => {
+        handler((prevState) =>
+          prevState
+            ? prevState.map((work) => {
+                /* eslint-disable-next-line no-underscore-dangle */
+                if (work._id === _id) {
+                  return {
+                    ...work,
+                    ...updatedWork,
+                  };
+                }
+                return work;
+              })
+            : null,
+        );
+      },
+    [],
+  );
 
   return (
     <NavContent>

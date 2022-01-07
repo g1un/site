@@ -27,8 +27,8 @@
 
 // reset-button
 @mixin reset-btn() {
-  padding: 0;
-  border: none;
-  cursor: pointer;
   background-color: transparent;
+  border: 0;
+  cursor: pointer;
+  padding: 0;
 }

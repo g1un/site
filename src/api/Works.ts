@@ -24,7 +24,9 @@ export const getWorks = async (): Promise<Work[]> => {
   }
 };
 
-export const updateWorks = async (data: Partial<Work>): Promise<AxiosResponse<{ message: string; work: Work }>> => {
+export const updateWorks = async (
+  data: Partial<Work>,
+): Promise<AxiosResponse<{ message: string; work: Work }>> => {
   try {
     const jwt = localStorage.getItem('jwt');
     const formData = new FormData();
@@ -38,7 +40,7 @@ export const updateWorks = async (data: Partial<Work>): Promise<AxiosResponse<{ 
       {
         headers: { Authorization: `Bearer ${jwt}` },
       },
-  );
+    );
     return response;
   } catch (e) {
     return e;

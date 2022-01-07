@@ -67,7 +67,7 @@ const AboutComponent = (props: Props) => {
             value={skills?.en[0] || ''}
             onChange={onChange}
           />
-          <button type="button" className={styles.save} onClick={saveSkills}>
+          <button type="button" className={`btn ${styles.save}`} onClick={saveSkills}>
             Save
           </button>
           <FadingMessage

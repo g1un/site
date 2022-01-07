@@ -70,7 +70,7 @@ const LoginComponent = (props: Props) => {
           value={credentials.password}
           onChange={onInputChange('password')}
         />
-        <button type="submit" disabled={isDisabled}>
+        <button className="btn" type="submit" disabled={isDisabled}>
           Login
         </button>
         <FadingMessage message={error} type="error" close={hideError} />
