@@ -18,6 +18,12 @@
   text-align: center;
   transition: background-color 0.25s, opacity 0.25s;
 
+  &._round {
+    border-radius: 50%;
+    min-width: 0;
+    width: 2rem;
+  }
+
   &:hover {
     background-color: rgba($black, 0.25);
   }

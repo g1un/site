@@ -17,6 +17,9 @@ interface Props {
   setWork: (work: Partial<Work>) => void;
   initialWork?: Work;
   setInitialWork: (work: Partial<Work>) => void;
+  isFirst: boolean;
+  isLast: boolean;
+  changeOrder: (id: string, isMoveUp: boolean) => void;
 }
 
 export const WorkItem = (props: Props) => {
@@ -31,6 +34,9 @@ export const WorkItem = (props: Props) => {
     setWork,
     initialWork,
     setInitialWork,
+    isFirst,
+    isLast,
+    changeOrder,
   } = props;
 
   const origin = process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : '';
@@ -107,6 +113,13 @@ export const WorkItem = (props: Props) => {
     setMessage(null);
   }, []);
 
+  const move = useCallback(
+    (isMoveUp: boolean) => () => {
+      changeOrder(_id, isMoveUp);
+    },
+    [changeOrder],
+  );
+
   return (
     <div className={styles.container}>
       {!isEdit ? (
@@ -171,6 +184,26 @@ export const WorkItem = (props: Props) => {
             onChange={onChange('repo')}
           />
           <div className={styles.buttons}>
+            <div className={styles.arrows}>
+              <button
+                className="btn _round"
+                type="button"
+                disabled={isFirst || isLoading}
+                title="Order will be saved immediately!"
+                onClick={move(true)}
+              >
+                &uarr;
+              </button>
+              <button
+                className="btn _round"
+                type="button"
+                disabled={isLast || isLoading}
+                title="Order will be saved immediately!"
+                onClick={move(false)}
+              >
+                &darr;
+              </button>
+            </div>
             <button
               className="btn"
               type="button"

@@ -46,3 +46,29 @@ export const updateWorks = async (
     return e;
   }
 };
+
+interface WorksOrder {
+  next: string;
+  prev: string;
+}
+
+export const updateWorksOrder = async (
+  data: WorksOrder,
+): Promise<AxiosResponse<{ message: string }>> => {
+  try {
+    const jwt = localStorage.getItem('jwt');
+    const response: AxiosResponse<{ message: string }> = await instance.post(
+      '/works',
+      {
+        changeIndexes: true,
+        ...data,
+      },
+      {
+        headers: { Authorization: `Bearer ${jwt}` },
+      },
+    );
+    return response;
+  } catch (e) {
+    return e;
+  }
+};

@@ -97,6 +97,17 @@
   justify-content: flex-end;
 }
 
+.arrows {
+  display: flex;
+  margin-right: auto;
+
+  button {
+    &:not(:last-child) {
+      margin-right: 1rem;
+    }
+  }
+}
+
 .spinner {
   align-items: center;
   background-color: rgba($white, 0.67);

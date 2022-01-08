@@ -15,14 +15,17 @@ const WorksComponent = ({ isEdit, setPageLoading }: Props) => {
   const [works, setWorks] = useState<Work[] | null>(null);
   const [initialWorks, setInitialWorks] = useState<Work[] | null>(null);
 
-  useEffect(() => {
-    (async () => {
-      const response = await API.Works.getWorks();
-      setWorks(response);
-      setInitialWorks(response);
-      setPageLoading(false);
-    })();
+  const getWorks = useCallback(async () => {
+    setPageLoading(true);
+    const response = await API.Works.getWorks();
+    setWorks(response.sort((a, b) => a.index - b.index));
+    setInitialWorks(response.sort((a, b) => a.index - b.index));
+    setPageLoading(false);
   }, [setPageLoading]);
+
+  useEffect(() => {
+    getWorks();
+  }, [getWorks]);
 
   const setWork = useCallback(
     (_id: string, handler: Dispatch<SetStateAction<Work[] | null>>) =>
@@ -45,25 +48,52 @@ const WorksComponent = ({ isEdit, setPageLoading }: Props) => {
     [],
   );
 
+  const changeOrder = useCallback(
+    async (id: string, isMoveUp: boolean) => {
+      if (works?.length) {
+        /* eslint-disable no-underscore-dangle */
+        const index = works.findIndex((work) => work._id === id);
+        const prev = isMoveUp ? id : works[index + 1]._id;
+        const next = isMoveUp ? works[index - 1]._id : id;
+        /* eslint-enable no-underscore-dangle */
+        setPageLoading(true);
+        const response = await API.Works.updateWorksOrder({ prev, next });
+        if (response.status === 200) {
+          // @todo message is to be moved to app message popup in future
+          /* eslint-disable-next-line no-console */
+          console.log(response.data.message);
+          getWorks();
+        } else {
+          // @todo message is to be moved to app message popup in future
+          /* eslint-disable-next-line no-console */
+          console.warn(response.data.message);
+          setPageLoading(false);
+        }
+      }
+    },
+    [works, setPageLoading],
+  );
+
   return (
     <NavContent>
-      {works
-        ?.sort((a, b) => a.index - b.index)
-        .map(({ address, descEn, imageSrc, imageFile, repo, _id }) => (
-          <WorkItem
-            key={_id}
-            isEdit={isEdit}
-            _id={_id}
-            address={address}
-            descEn={descEn}
-            imageSrc={imageSrc}
-            imageFile={imageFile}
-            repo={repo}
-            setWork={setWork(_id, setWorks)}
-            initialWork={initialWorks?.find(({ _id: initialId }) => _id === initialId)}
-            setInitialWork={setWork(_id, setInitialWorks)}
-          />
-        ))}
+      {works?.map(({ address, descEn, imageSrc, imageFile, repo, _id }, i) => (
+        <WorkItem
+          key={_id}
+          isEdit={isEdit}
+          _id={_id}
+          address={address}
+          descEn={descEn}
+          imageSrc={imageSrc}
+          imageFile={imageFile}
+          repo={repo}
+          setWork={setWork(_id, setWorks)}
+          initialWork={(initialWorks as Work[])?.find(({ _id: initialId }) => _id === initialId)}
+          setInitialWork={setWork(_id, setInitialWorks)}
+          isFirst={i === 0}
+          isLast={i === (works || []).length - 1}
+          changeOrder={changeOrder}
+        />
+      ))}
     </NavContent>
   );
 };
