@@ -29,7 +29,7 @@ export const FadingMessage = ({ className = '', message, type, close }: Props) =
         close();
       }, 5000);
     }
-  }, [message]);
+  }, [message, close]);
 
   return !message ? null : (
     <p className={`${styles.message} ${typeClassName} ${className}`}>{message}</p>

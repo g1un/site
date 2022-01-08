@@ -35,7 +35,7 @@ export const AdminComponent = (props: Props) => {
       setAuthorized(false);
       setPageLoading(false);
     }
-  }, [setPageLoading, setAuthorized]);
+  }, [jwt, setPageLoading, setAuthorized]);
 
   return isAuthorized && children ? (
     children

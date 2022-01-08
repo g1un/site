@@ -28,7 +28,7 @@ const NavItemComponent = (props: Props) => {
       setOpen(false);
       setPageLoading(true);
     }
-  }, [isActive]);
+  }, [isActive, setPageLoading]);
 
   const onTransitionEnd = useCallback(() => {
     if (isActive) {

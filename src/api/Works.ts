@@ -9,7 +9,7 @@ export interface Work {
   imageSrc: string;
   index: number;
   repo?: string;
-  _id: string;
+  _id: string | null; // null for new Work
 
   // for sending image
   imageFile?: File;
@@ -24,9 +24,15 @@ export const getWorks = async (): Promise<Work[]> => {
   }
 };
 
-export const updateWorks = async (
-  data: Partial<Work>,
-): Promise<AxiosResponse<{ message: string; work: Work }>> => {
+interface UpdatedWork {
+  message: string;
+  work?: Work;
+  error?: {
+    message: string;
+  };
+}
+
+export const updateWorks = async (data: Partial<Work>): Promise<AxiosResponse<UpdatedWork>> => {
   try {
     const jwt = localStorage.getItem('jwt');
     const formData = new FormData();
@@ -34,16 +40,12 @@ export const updateWorks = async (
       const value = data[key as keyof Work];
       formData.append(key, value instanceof File ? value : `${value}`);
     });
-    const response: AxiosResponse<{ message: string; work: Work }> = await instance.post(
-      '/works',
-      formData,
-      {
-        headers: { Authorization: `Bearer ${jwt}` },
-      },
-    );
+    const response: AxiosResponse<UpdatedWork> = await instance.post('/works', formData, {
+      headers: { Authorization: `Bearer ${jwt}` },
+    });
     return response;
   } catch (e) {
-    return e;
+    return e.response;
   }
 };
 

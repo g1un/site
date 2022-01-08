@@ -8,11 +8,12 @@ import styles from './styles.module.scss';
 
 interface Props {
   isEdit?: boolean;
-  _id: string;
+  _id: string | null;
   address?: string;
   descEn: string;
   imageSrc: string;
   imageFile?: File;
+  index: number;
   repo?: string;
   setWork: (work: Partial<Work>) => void;
   initialWork?: Work;
@@ -30,6 +31,7 @@ export const WorkItem = (props: Props) => {
     descEn,
     imageSrc,
     imageFile,
+    index,
     repo,
     setWork,
     initialWork,
@@ -92,22 +94,50 @@ export const WorkItem = (props: Props) => {
 
   const isWorkChanged = useMemo(() => !!Object.keys(changedWork).length, [changedWork]);
 
-  const saveWork = useCallback(async () => {
+  const updateWork = useCallback(async () => {
     if (isWorkChanged) {
       setLoading(true);
       const response = await API.Works.updateWorks({ _id, ...changedWork });
       let type: FadingMessageTypes | undefined;
-      if (response.status === 200) {
+      let text: string;
+      if (response.status === 200 && response.data.work) {
         type = 'success';
+        text = response.data.message;
         setWork({ imageFile: undefined });
         setInitialWork(response.data.work);
       } else {
         type = 'error';
+        text = response.data.error?.message || '';
       }
       setLoading(false);
-      setMessage({ text: response.data.message, type });
+      setMessage({ text, type });
     }
-  }, [isWorkChanged, changedWork, setInitialWork]);
+  }, [isWorkChanged, _id, changedWork, setWork, setInitialWork]);
+
+  const createNewWork = useCallback(async () => {
+    setLoading(true);
+    const response = await API.Works.updateWorks({
+      address,
+      descEn,
+      descRu: '',
+      imageFile,
+      index,
+      repo,
+    });
+    let type: FadingMessageTypes | undefined;
+    let text: string;
+    if (response.status === 200 && response.data.work) {
+      type = 'success';
+      text = response.data.message;
+      setWork({ ...response.data.work, imageFile: undefined });
+      setInitialWork(response.data.work);
+    } else {
+      type = 'error';
+      text = response.data.error?.message || '';
+    }
+    setLoading(false);
+    setMessage({ text, type });
+  }, [address, descEn, imageFile, index, repo, setWork, setInitialWork]);
 
   const closeMessage = useCallback(() => {
     setMessage(null);
@@ -115,9 +145,21 @@ export const WorkItem = (props: Props) => {
 
   const move = useCallback(
     (isMoveUp: boolean) => () => {
-      changeOrder(_id, isMoveUp);
+      if (_id) {
+        changeOrder(_id, isMoveUp);
+      }
     },
-    [changeOrder],
+    [changeOrder, _id],
+  );
+
+  const isWorkEmpty = useMemo(
+    () => !(imageSrc || imageFile) || !descEn,
+    [imageSrc, imageFile, descEn],
+  );
+
+  const isSaveDisabled = useMemo(
+    () => !isWorkChanged || isWorkEmpty || isLoading,
+    [isWorkChanged, isWorkEmpty, isLoading],
   );
 
   return (
@@ -127,23 +169,18 @@ export const WorkItem = (props: Props) => {
           <img src={`${origin}/${imageSrc}`} alt="" />
         </div>
       ) : (
-        <label className={`${styles.image} ${styles.Edit}`} htmlFor="edit-work-image">
-          <input
-            className={styles.imageInput}
-            name="edit-work-image"
-            type="file"
-            onChange={onImageChange}
-          />
+        <label className={`${styles.image} ${styles.Edit}`}>
+          <input className={styles.imageInput} type="file" onChange={onImageChange} />
           <img src={imageSrcUrl} alt="" />
         </label>
       )}
       {!isEdit ? (
         <>
           <p className={`p1 ${styles.desc}`}>
-            {descLines.map((line, index) => (
+            {descLines.map((line, lineIndex) => (
               <React.Fragment key={line}>
                 {line}
-                {index < descLines.length - 1 ? <br /> : ''}
+                {lineIndex < descLines.length - 1 ? <br /> : ''}
               </React.Fragment>
             ))}
           </p>
@@ -188,7 +225,7 @@ export const WorkItem = (props: Props) => {
               <button
                 className="btn _round"
                 type="button"
-                disabled={isFirst || isLoading}
+                disabled={!_id || isFirst || isLoading}
                 title="Order will be saved immediately!"
                 onClick={move(true)}
               >
@@ -197,7 +234,7 @@ export const WorkItem = (props: Props) => {
               <button
                 className="btn _round"
                 type="button"
-                disabled={isLast || isLoading}
+                disabled={!_id || isLast || isLoading}
                 title="Order will be saved immediately!"
                 onClick={move(false)}
               >
@@ -207,8 +244,8 @@ export const WorkItem = (props: Props) => {
             <button
               className="btn"
               type="button"
-              disabled={!isWorkChanged || isLoading}
-              onClick={saveWork}
+              disabled={isSaveDisabled}
+              onClick={_id ? updateWork : createNewWork}
             >
               Save
             </button>
