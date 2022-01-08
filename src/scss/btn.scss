@@ -18,14 +18,32 @@
   text-align: center;
   transition: background-color 0.25s, opacity 0.25s;
 
+  &:hover {
+    background-color: rgba($black, 0.25);
+  }
+
   &._round {
     border-radius: 50%;
     min-width: 0;
     width: 2rem;
   }
 
-  &:hover {
-    background-color: rgba($black, 0.25);
+  &._green {
+    background-color: rgba($green, 0.67);
+    color: $white;
+
+    &:hover {
+      background-color: $green;
+    }
+  }
+
+  &._red {
+    background-color: rgba($red, 0.67);
+    color: $white;
+
+    &:hover {
+      background-color: $red;
+    }
   }
 
   &[disabled] {

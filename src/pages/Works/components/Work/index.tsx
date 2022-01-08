@@ -21,6 +21,8 @@ interface Props {
   isFirst: boolean;
   isLast: boolean;
   changeOrder: (id: string, isMoveUp: boolean) => void;
+  getWorks: () => void;
+  deleteWorkWithoutId: () => void;
 }
 
 export const WorkItem = (props: Props) => {
@@ -39,6 +41,8 @@ export const WorkItem = (props: Props) => {
     isFirst,
     isLast,
     changeOrder,
+    getWorks,
+    deleteWorkWithoutId,
   } = props;
 
   const origin = process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : '';
@@ -71,7 +75,7 @@ export const WorkItem = (props: Props) => {
     if (/data:image\/[^;]+;base64[^"]+/i.test(imageSrc)) {
       return imageSrc;
     }
-    return `${origin}/${imageSrc}`;
+    return imageSrc ? `${origin}/${imageSrc}` : '';
   }, [origin, imageSrc]);
 
   const onChange = useCallback(
@@ -162,6 +166,25 @@ export const WorkItem = (props: Props) => {
     [isWorkChanged, isWorkEmpty, isLoading],
   );
 
+  const deleteWork = useCallback(async () => {
+    if (_id) {
+      setLoading(true);
+      const response = await API.Works.deleteWork(_id);
+      let type: FadingMessageTypes | undefined;
+      let text: string;
+      if (response.status === 200) {
+        getWorks();
+      } else {
+        type = 'error';
+        text = response.data.error?.message || '';
+        setMessage({ text, type });
+        setLoading(false);
+      }
+    } else {
+      deleteWorkWithoutId();
+    }
+  }, [_id, getWorks, deleteWorkWithoutId]);
+
   return (
     <div className={styles.container}>
       {!isEdit ? (
@@ -169,9 +192,9 @@ export const WorkItem = (props: Props) => {
           <img src={`${origin}/${imageSrc}`} alt="" />
         </div>
       ) : (
-        <label className={`${styles.image} ${styles.Edit}`}>
+        <label className={`${styles.image} ${styles.Edit} ${!imageSrcUrl ? styles.Add : ''}`}>
           <input className={styles.imageInput} type="file" onChange={onImageChange} />
-          <img src={imageSrcUrl} alt="" />
+          {imageSrcUrl && <img src={imageSrcUrl} alt="" />}
         </label>
       )}
       {!isEdit ? (
@@ -242,7 +265,15 @@ export const WorkItem = (props: Props) => {
               </button>
             </div>
             <button
-              className="btn"
+              className="btn _red"
+              type="button"
+              // disabled={isSaveDisabled}
+              onClick={deleteWork}
+            >
+              Delete
+            </button>
+            <button
+              className={`btn _green ${styles.save}`}
               type="button"
               disabled={isSaveDisabled}
               onClick={_id ? updateWork : createNewWork}

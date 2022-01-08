@@ -88,6 +88,15 @@ const WorksComponent = ({ isEdit, setPageLoading }: Props) => {
     ]);
   }, [works]);
 
+  const deleteWorkWithoutId = useCallback(() => {
+    if (works) {
+      const workWithoutIdIndex = works.findIndex(({ _id }) => !_id);
+      if (workWithoutIdIndex !== -1) {
+        setWorks((prevState) => (prevState ? prevState.slice(0, workWithoutIdIndex) : prevState));
+      }
+    }
+  }, [works]);
+
   return (
     <NavContent>
       {works?.map(({ address, descEn, imageSrc, imageFile, repo, _id }, i) => (
@@ -108,9 +117,17 @@ const WorksComponent = ({ isEdit, setPageLoading }: Props) => {
           /* eslint-disable-next-line no-underscore-dangle */
           isLast={i === (works || []).length - 1 || !(works || [])[i + 1]._id}
           changeOrder={changeOrder}
+          getWorks={getWorks}
+          deleteWorkWithoutId={deleteWorkWithoutId}
         />
       ))}
-      <button className={`btn _round ${styles.add}`} type="button" onClick={addWork}>
+      <button
+        className={`btn _round ${styles.add}`}
+        type="button"
+        onClick={addWork}
+        /* eslint-disable-next-line no-underscore-dangle */
+        disabled={!!works?.length && !works[works.length - 1]._id}
+      >
         +
       </button>
     </NavContent>

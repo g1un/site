@@ -15,6 +15,14 @@ export interface Work {
   imageFile?: File;
 }
 
+interface WorkResponse {
+  message: string;
+  work?: Work;
+  error?: {
+    message: string;
+  };
+}
+
 export const getWorks = async (): Promise<Work[]> => {
   try {
     const response: AxiosResponse<Work[]> = await instance.get('/works');
@@ -24,15 +32,7 @@ export const getWorks = async (): Promise<Work[]> => {
   }
 };
 
-interface UpdatedWork {
-  message: string;
-  work?: Work;
-  error?: {
-    message: string;
-  };
-}
-
-export const updateWorks = async (data: Partial<Work>): Promise<AxiosResponse<UpdatedWork>> => {
+export const updateWorks = async (data: Partial<Work>): Promise<AxiosResponse<WorkResponse>> => {
   try {
     const jwt = localStorage.getItem('jwt');
     const formData = new FormData();
@@ -40,7 +40,7 @@ export const updateWorks = async (data: Partial<Work>): Promise<AxiosResponse<Up
       const value = data[key as keyof Work];
       formData.append(key, value instanceof File ? value : `${value}`);
     });
-    const response: AxiosResponse<UpdatedWork> = await instance.post('/works', formData, {
+    const response: AxiosResponse<WorkResponse> = await instance.post('/works', formData, {
       headers: { Authorization: `Bearer ${jwt}` },
     });
     return response;
@@ -69,6 +69,18 @@ export const updateWorksOrder = async (
         headers: { Authorization: `Bearer ${jwt}` },
       },
     );
+    return response;
+  } catch (e) {
+    return e;
+  }
+};
+
+export const deleteWork = async (id: string): Promise<AxiosResponse<WorkResponse>> => {
+  try {
+    const jwt = localStorage.getItem('jwt');
+    const response: AxiosResponse<WorkResponse> = await instance.delete(`/works/${id}`, {
+      headers: { Authorization: `Bearer ${jwt}` },
+    });
     return response;
   } catch (e) {
     return e;
