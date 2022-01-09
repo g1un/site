@@ -5,8 +5,9 @@ import { API } from 'api';
 import { Skills } from 'api/Skills';
 import { NavContent } from 'components/Nav/components/NavContent';
 import { appActions, SetPageLoading } from 'store/app/actions';
-import { FadingMessage, FadingMessageTypes } from 'components/FadingMessage';
+import { FadingMessage } from 'components/FadingMessage';
 import { TextInput } from 'components/TextInput';
+import { FadingMessageTypes } from 'models/Message';
 import styles from './styles.module.scss';
 
 interface Props extends SetPageLoading {
@@ -86,11 +87,7 @@ const AboutComponent = (props: Props) => {
           >
             Save
           </button>
-          <FadingMessage
-            message={message?.text || null}
-            type={message?.type}
-            close={closeMessage}
-          />
+          <FadingMessage message={message?.text} type={message?.type} close={closeMessage} />
         </>
       )}
     </NavContent>

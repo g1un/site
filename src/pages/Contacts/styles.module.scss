@@ -1,14 +1,14 @@
 @import 'src/scss/variables';
 
 .table {
-  border: 0;
-  border-collapse: collapse;
   flex: 1 1 auto;
-  margin: 0;
-  min-width: 0;
-  padding: 0;
+  border-collapse: collapse;
   table-layout: fixed;
+  margin: 0 0 1rem;
+  padding: 0;
   width: 100%;
+  min-width: 0;
+  border: 0;
 
   td {
     border: 0;
@@ -21,4 +21,8 @@
       width: 4rem;
     }
   }
+}
+
+.save {
+  align-self: center;
 }

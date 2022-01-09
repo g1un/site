@@ -59,7 +59,7 @@ export const routes: Route[] = [
     path: '/admin/contacts',
     component: (
       <Admin>
-        <Contacts />
+        <Contacts isEdit />
       </Admin>
     ),
     title: 'Edit Contacts',

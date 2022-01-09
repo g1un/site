@@ -1,12 +1,11 @@
 import React, { useEffect, useMemo } from 'react';
 
+import { FadingMessageTypes } from 'models/Message';
 import styles from './styles.module.scss';
-
-export type FadingMessageTypes = 'error' | 'success';
 
 interface Props {
   className?: string;
-  message: string | null;
+  message?: string | null;
   type?: FadingMessageTypes;
   close: () => void;
 }

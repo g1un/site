@@ -2,9 +2,10 @@ import React, { useCallback, useMemo, useState } from 'react';
 
 import { Work } from 'api/Works';
 import { API } from 'api';
-import { FadingMessage, FadingMessageTypes } from 'components/FadingMessage';
+import { FadingMessage } from 'components/FadingMessage';
 import { Spinner } from 'components/Spinner';
 import { TextInput } from 'components/TextInput';
+import { FadingMessageTypes } from 'models/Message';
 import styles from './styles.module.scss';
 
 interface Props {
@@ -111,7 +112,7 @@ export const WorkItem = (props: Props) => {
         setInitialWork(response.data.work);
       } else {
         type = 'error';
-        text = response.data.error?.message || '';
+        text = response.data.error?.message || `Error status: ${response.status}`;
       }
       setLoading(false);
       setMessage({ text, type });
@@ -281,11 +282,7 @@ export const WorkItem = (props: Props) => {
               Save
             </button>
           </div>
-          <FadingMessage
-            message={message?.text || null}
-            type={message?.type}
-            close={closeMessage}
-          />
+          <FadingMessage message={message?.text} type={message?.type} close={closeMessage} />
         </>
       )}
       {isLoading && (
