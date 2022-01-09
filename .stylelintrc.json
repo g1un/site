@@ -3,6 +3,7 @@
   "rules": {
     "max-nesting-depth": null,
     "selector-class-pattern": null,
-    "scss/at-mixin-pattern": null
+    "scss/at-mixin-pattern": null,
+    "order/properties-alphabetical-order": null
   }
 }

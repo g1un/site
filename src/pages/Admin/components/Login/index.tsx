@@ -5,6 +5,7 @@ import { NavContent } from 'components/Nav/components/NavContent';
 import { API } from 'api';
 import { authActions, SetAuthorized } from 'store/auth/actions';
 import { FadingMessage } from 'components/FadingMessage';
+import { TextInput } from 'components/TextInput';
 import styles from './styles.module.scss';
 
 type Props = SetAuthorized;
@@ -19,14 +20,13 @@ const LoginComponent = (props: Props) => {
   const [error, setError] = useState<string | null>(null);
 
   const onInputChange = useCallback(
-    (key: string) =>
-      ({ target: { value } }: { target: { value: string } }) => {
-        setError(null);
-        setCredentials((prevState) => ({
-          ...prevState,
-          [key]: value,
-        }));
-      },
+    (key: string) => (value: string) => {
+      setError(null);
+      setCredentials((prevState) => ({
+        ...prevState,
+        [key]: value,
+      }));
+    },
     [],
   );
 
@@ -56,16 +56,17 @@ const LoginComponent = (props: Props) => {
     <NavContent>
       <form className={styles.container} onSubmit={onSubmit}>
         <h2 className={`h2 ${styles.title}`}>Login</h2>
-        <input
+        <TextInput
           className={styles.input}
-          type="text"
+          label="Email"
           placeholder="email"
           value={credentials.email}
           onChange={onInputChange('email')}
         />
-        <input
+        <TextInput
           className={styles.input}
           type="password"
+          label="Password"
           placeholder="password"
           value={credentials.password}
           onChange={onInputChange('password')}

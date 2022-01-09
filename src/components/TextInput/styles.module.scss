@@ -1,0 +1,21 @@
+@import 'src/scss/variables';
+@import 'src/scss/mixins';
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.label {
+  @include p1();
+  margin-bottom: 0.25rem;
+}
+
+.input,
+.textarea {
+  @include f1-400();
+  padding: 0.5rem;
+  border: 1/16+rem solid $black;
+  border-radius: 0.25rem;
+}

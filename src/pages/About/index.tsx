@@ -1,11 +1,12 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { connect } from 'react-redux';
 
 import { API } from 'api';
 import { Skills } from 'api/Skills';
 import { NavContent } from 'components/Nav/components/NavContent';
 import { appActions, SetPageLoading } from 'store/app/actions';
-import { FadingMessage, FadingMessageTypes } from '../../components/FadingMessage';
+import { FadingMessage, FadingMessageTypes } from 'components/FadingMessage';
+import { TextInput } from 'components/TextInput';
 import styles from './styles.module.scss';
 
 interface Props extends SetPageLoading {
@@ -16,58 +17,73 @@ const AboutComponent = (props: Props) => {
   const { isEdit, setPageLoading } = props;
 
   const [skills, setSkills] = useState<Skills | null>(null);
+  const [initialSkills, setInitialSkills] = useState<Skills | null>(null);
   const [message, setMessage] = useState<{ text: string; type?: FadingMessageTypes } | null>(null);
 
-  useEffect(() => {
-    (async () => {
-      const response = await API.Skills.getSkills();
-      setSkills(response);
-      setPageLoading(false);
-    })();
+  const getSkills = useCallback(async () => {
+    setPageLoading(true);
+    const response = await API.Skills.getSkills();
+    setSkills(response);
+    setInitialSkills(response);
+    setPageLoading(false);
   }, [setPageLoading]);
 
-  const onChange = useCallback(({ target: { value } }: { target: { value: string } }) => {
+  useEffect(() => {
+    getSkills();
+  }, [getSkills]);
+
+  const onChange = useCallback((value: string) => {
     setSkills({ en: [value] });
   }, []);
 
   const saveSkills = useCallback(async () => {
     if (skills) {
+      setPageLoading(true);
       const response = await API.Skills.updateSkills(skills);
-      let type: FadingMessageTypes | undefined;
-      if (response.status !== 200) {
+      let type: FadingMessageTypes = 'success';
+      if (response.status === 200) {
+        getSkills();
+      } else {
         type = 'error';
+        setPageLoading(false);
       }
       setMessage({ text: response.data.message, type });
     }
-  }, [skills]);
+  }, [skills, setPageLoading, getSkills]);
 
   const closeMessage = useCallback(() => setMessage(null), []);
+
+  const isDisabled = useMemo(() => skills?.en[0] === initialSkills?.en[0], [skills, initialSkills]);
+
+  const skillsRows = useMemo(() => (skills?.en.length ? skills.en[0].split('\n') : []), [skills]);
 
   return (
     <NavContent>
       {skills?.en.length && !isEdit ? (
-        skills.en.map((skill) => {
-          const skillsRows = skill.split('\n');
-          return (
-            <p key={skill}>
-              {skillsRows.map((row, index) => (
-                <React.Fragment key={row}>
-                  {row}
-                  {index < skillsRows.length - 1 ? <br /> : ''}
-                </React.Fragment>
-              ))}
-            </p>
-          );
-        })
+        <p>
+          {skillsRows.map((row, index) => (
+            <React.Fragment key={row}>
+              {row}
+              {index < skillsRows.length - 1 ? <br /> : ''}
+            </React.Fragment>
+          ))}
+        </p>
       ) : (
         <>
-          <textarea
-            className={styles.textarea}
-            placeholder="Edit skills"
+          <TextInput
+            label="Skills"
+            placeholder="skills"
             value={skills?.en[0] || ''}
             onChange={onChange}
+            isTextarea
+            textareaHeight={200}
           />
-          <button type="button" className={`btn ${styles.save}`} onClick={saveSkills}>
+          <button
+            type="button"
+            className={`btn ${styles.save}`}
+            onClick={saveSkills}
+            disabled={isDisabled}
+          >
             Save
           </button>
           <FadingMessage

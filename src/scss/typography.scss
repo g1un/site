@@ -3,14 +3,14 @@
 
 .h2 {
   @include f1-700();
-  color: $black;
   font-size: 1.125rem;
   line-height: 24/16+rem;
+  color: $black;
 }
 
 .p1 {
   @include f1-400();
-  color: $black;
   font-size: 1rem;
   line-height: 20/16+em;
+  color: $black;
 }

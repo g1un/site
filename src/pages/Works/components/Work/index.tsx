@@ -4,6 +4,7 @@ import { Work } from 'api/Works';
 import { API } from 'api';
 import { FadingMessage, FadingMessageTypes } from 'components/FadingMessage';
 import { Spinner } from 'components/Spinner';
+import { TextInput } from 'components/TextInput';
 import styles from './styles.module.scss';
 
 interface Props {
@@ -79,10 +80,9 @@ export const WorkItem = (props: Props) => {
   }, [origin, imageSrc]);
 
   const onChange = useCallback(
-    (name: keyof Work) =>
-      ({ target: { value } }: { target: { value: string } }) => {
-        setWork({ [name]: value });
-      },
+    (name: keyof Work) => (value: string) => {
+      setWork({ [name]: value });
+    },
     [setWork],
   );
 
@@ -167,7 +167,8 @@ export const WorkItem = (props: Props) => {
   );
 
   const deleteWork = useCallback(async () => {
-    if (_id) {
+    /* eslint-disable-next-line no-alert */
+    if (_id && window.confirm(`Work with id ${_id} will be deleted.`)) {
       setLoading(true);
       const response = await API.Works.deleteWork(_id);
       let type: FadingMessageTypes | undefined;
@@ -220,26 +221,25 @@ export const WorkItem = (props: Props) => {
         </>
       ) : (
         <>
-          <span className="p1">Edit Description</span>
-          <textarea
-            className={styles.textarea}
-            placeholder="Description"
+          <TextInput
+            className={styles.input}
+            label="Edit Description"
+            placeholder="description"
             value={descEn}
             onChange={onChange('descEn')}
+            isTextarea
           />
-          <span className="p1">Edit Site Address</span>
-          <input
+          <TextInput
             className={styles.input}
-            type="text"
-            placeholder="Site Address"
+            label="Edit Site Address"
+            placeholder="site address"
             value={address}
             onChange={onChange('address')}
           />
-          <span className="p1">Edit Repository Link</span>
-          <input
+          <TextInput
             className={styles.input}
-            type="text"
-            placeholder="Repository Link"
+            label="Edit Repository Link"
+            placeholder="repository link"
             value={repo}
             onChange={onChange('repo')}
           />
