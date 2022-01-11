@@ -47,7 +47,8 @@ export const WorkItem = (props: Props) => {
     deleteWorkWithoutId,
   } = props;
 
-  const origin = process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : '';
+  const origin =
+    process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : window.location.origin;
 
   const [message, setMessage] = useState<{ text: string; type: FadingMessageTypes } | null>(null);
   const [isLoading, setLoading] = useState<boolean>(false);

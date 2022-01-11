@@ -121,15 +121,17 @@ const WorksComponent = ({ isEdit, setPageLoading }: Props) => {
           deleteWorkWithoutId={deleteWorkWithoutId}
         />
       ))}
-      <button
-        className={`btn _round ${styles.add}`}
-        type="button"
-        onClick={addWork}
-        /* eslint-disable-next-line no-underscore-dangle */
-        disabled={!!works?.length && !works[works.length - 1]._id}
-      >
-        +
-      </button>
+      {isEdit && (
+        <button
+          className={`btn _round ${styles.add}`}
+          type="button"
+          onClick={addWork}
+          /* eslint-disable-next-line no-underscore-dangle */
+          disabled={!!works?.length && !works[works.length - 1]._id}
+        >
+          +
+        </button>
+      )}
     </NavContent>
   );
 };
