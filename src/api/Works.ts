@@ -1,11 +1,12 @@
 import { AxiosResponse } from 'axios';
 
 import { instance } from './Instance';
+import { GetResponse, UpdateResponse } from '../models/Response';
 
 export interface Work {
   address?: string;
   descEn: string;
-  descRu: string;
+  descDe: string;
   imageSrc: string;
   index: number;
   repo?: string;
@@ -15,24 +16,18 @@ export interface Work {
   imageFile?: File;
 }
 
-interface WorkResponse {
-  message: string;
-  work?: Work;
-  error?: {
-    message: string;
-  };
-}
-
 export const getWorks = async (): Promise<Work[]> => {
   try {
-    const response: AxiosResponse<Work[]> = await instance.get('/works');
-    return response.data;
+    const response: AxiosResponse<GetResponse<Work[]>> = await instance.get('/works');
+    return response.data.data;
   } catch (e) {
-    return e.response.data;
+    return e.response.data.error;
   }
 };
 
-export const updateWorks = async (data: Partial<Work>): Promise<AxiosResponse<WorkResponse>> => {
+export const updateWorks = async (
+  data: Partial<Work>,
+): Promise<AxiosResponse<UpdateResponse<Work>>> => {
   try {
     const jwt = localStorage.getItem('jwt');
     const formData = new FormData();
@@ -40,7 +35,7 @@ export const updateWorks = async (data: Partial<Work>): Promise<AxiosResponse<Wo
       const value = data[key as keyof Work];
       formData.append(key, value instanceof File ? value : `${value}`);
     });
-    const response: AxiosResponse<WorkResponse> = await instance.post('/works', formData, {
+    const response: AxiosResponse<UpdateResponse<Work>> = await instance.post('/works', formData, {
       headers: { Authorization: `Bearer ${jwt}` },
     });
     return response;
@@ -75,14 +70,14 @@ export const updateWorksOrder = async (
   }
 };
 
-export const deleteWork = async (id: string): Promise<AxiosResponse<WorkResponse>> => {
+export const deleteWork = async (id: string): Promise<AxiosResponse<UpdateResponse<Work>>> => {
   try {
     const jwt = localStorage.getItem('jwt');
-    const response: AxiosResponse<WorkResponse> = await instance.delete(`/works/${id}`, {
+    const response: AxiosResponse<UpdateResponse<Work>> = await instance.delete(`/works/${id}`, {
       headers: { Authorization: `Bearer ${jwt}` },
     });
     return response;
   } catch (e) {
-    return e;
+    return e.response;
   }
 };

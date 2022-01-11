@@ -4,3 +4,15 @@ export interface Response {
     message: string;
   };
 }
+
+export interface GetResponse<T> {
+  data: T;
+}
+
+export interface UpdateResponse<T> {
+  message: string;
+  data?: T;
+  error?: {
+    message: string;
+  };
+}

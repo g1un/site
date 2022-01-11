@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import { routes, Route as RouteType } from 'routes';
 import { Nav } from 'components/Nav';
 import { AppState } from 'store';
+import { LanguageSwitcher } from 'components/LanguageSwitcher';
 import 'scss/app.scss';
 
 interface Props {
@@ -20,20 +21,23 @@ const AppComponent = (props: Props) => {
   );
 
   return (
-    <BrowserRouter>
-      <Routes>
-        {currentRoutes.map(({ path, component, isVisible, isPrivate }) => (
-          <Route
-            key={path}
-            path={path}
-            element={
-              isVisible !== false ? <Nav isPrivateNav={isPrivate}>{component}</Nav> : component
-            }
-          />
-        ))}
-        <Route path="*" element={<Navigate to="/" />} />
-      </Routes>
-    </BrowserRouter>
+    <>
+      <LanguageSwitcher />
+      <BrowserRouter>
+        <Routes>
+          {currentRoutes.map(({ path, component, isVisible, isPrivate }) => (
+            <Route
+              key={path}
+              path={path}
+              element={
+                isVisible !== false ? <Nav isPrivateNav={isPrivate}>{component}</Nav> : component
+              }
+            />
+          ))}
+          <Route path="*" element={<Navigate to="/" />} />
+        </Routes>
+      </BrowserRouter>
+    </>
   );
 };
 

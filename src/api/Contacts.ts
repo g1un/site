@@ -1,33 +1,36 @@
 import { AxiosResponse } from 'axios';
 
-import { Response } from 'models/Response';
+import { GetResponse, UpdateResponse } from 'models/Response';
 import { instance } from './Instance';
 
 export interface Contacts {
   email: string;
   tel: string;
-  cv: {
-    ru: string;
-    en: string;
-  };
+  cv: string;
   github: string;
 }
 
 export const getContacts = async (): Promise<Contacts> => {
   try {
-    const response: AxiosResponse<{ response: Contacts }> = await instance.get('/contacts');
-    return response.data.response;
+    const response: AxiosResponse<GetResponse<Contacts>> = await instance.get('/contacts');
+    return response.data.data;
   } catch (e) {
-    return e.response.data;
+    return e.response.data.error;
   }
 };
 
-export const updateContacts = async (data: Partial<Contacts>): Promise<AxiosResponse<Response>> => {
+export const updateContacts = async (
+  data: Partial<Contacts>,
+): Promise<AxiosResponse<UpdateResponse<Contacts>>> => {
   try {
     const jwt = localStorage.getItem('jwt');
-    const response: AxiosResponse<Response> = await instance.post('/contacts', data, {
-      headers: { Authorization: `Bearer ${jwt}` },
-    });
+    const response: AxiosResponse<UpdateResponse<Contacts>> = await instance.post(
+      '/contacts',
+      data,
+      {
+        headers: { Authorization: `Bearer ${jwt}` },
+      },
+    );
     return response;
   } catch (e) {
     return e.response;

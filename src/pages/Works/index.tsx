@@ -78,8 +78,8 @@ const WorksComponent = ({ isEdit, setPageLoading }: Props) => {
       ...(works || []),
       {
         address: '',
+        descDe: '',
         descEn: '',
-        descRu: '',
         imageSrc: '',
         index: newIndex,
         repo: '',
@@ -99,28 +99,35 @@ const WorksComponent = ({ isEdit, setPageLoading }: Props) => {
 
   return (
     <NavContent>
-      {works?.map(({ address, descEn, imageSrc, imageFile, repo, _id }, i) => (
-        <WorkItem
-          key={_id}
-          isEdit={isEdit}
-          _id={_id}
-          address={address}
-          descEn={descEn}
-          imageSrc={imageSrc}
-          imageFile={imageFile}
-          index={i}
-          repo={repo}
-          setWork={setWork(i, setWorks)}
-          initialWork={(initialWorks as Work[])?.find(({ _id: initialId }) => _id === initialId)}
-          setInitialWork={setWork(i, setInitialWorks)}
-          isFirst={i === 0}
-          /* eslint-disable-next-line no-underscore-dangle */
-          isLast={i === (works || []).length - 1 || !(works || [])[i + 1]._id}
-          changeOrder={changeOrder}
-          getWorks={getWorks}
-          deleteWorkWithoutId={deleteWorkWithoutId}
-        />
-      ))}
+      {works?.length ? (
+        works.map(({ address, descEn, descDe, imageSrc, imageFile, repo, _id }, i) => (
+          <WorkItem
+            key={_id}
+            isEdit={isEdit}
+            _id={_id}
+            address={address}
+            descEn={descEn}
+            descDe={descDe}
+            imageSrc={imageSrc}
+            imageFile={imageFile}
+            index={i}
+            repo={repo}
+            setWork={setWork(i, setWorks)}
+            initialWork={(initialWorks as Work[])?.find(({ _id: initialId }) => _id === initialId)}
+            setInitialWork={setWork(i, setInitialWorks)}
+            isFirst={i === 0}
+            /* eslint-disable-next-line no-underscore-dangle */
+            isLast={i === (works || []).length - 1 || !(works || [])[i + 1]._id}
+            changeOrder={changeOrder}
+            getWorks={getWorks}
+            deleteWorkWithoutId={deleteWorkWithoutId}
+          />
+        ))
+      ) : (
+        <p className="p1 text-center">
+          No data yet.{isEdit ? ' Add first work with "+" button.' : ''}
+        </p>
+      )}
       {isEdit && (
         <button
           className={`btn _round ${styles.add}`}

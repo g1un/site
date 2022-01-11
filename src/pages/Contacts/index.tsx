@@ -44,14 +44,7 @@ export const ContactsComponent = ({ setPageLoading, isEdit }: Props) => {
         prevState
           ? {
               ...prevState,
-              ...(name === 'cv'
-                ? {
-                    cv: {
-                      ...prevState.cv,
-                      en: value,
-                    },
-                  }
-                : { [name]: value }),
+              [name]: value,
             }
           : prevState,
       );
@@ -90,11 +83,7 @@ export const ContactsComponent = ({ setPageLoading, isEdit }: Props) => {
         ? (Object.keys(contacts) as Array<keyof ContactsInterface>).reduce<
             Partial<ContactsInterface>
           >((acc, curr) => {
-            if (curr === 'cv') {
-              if (contacts[curr].en !== initialContacts[curr].en) {
-                acc[curr] = contacts[curr];
-              }
-            } else if (contacts[curr] !== initialContacts[curr]) {
+            if (contacts[curr] !== initialContacts[curr]) {
               acc[curr] = contacts[curr];
             }
             return acc;
@@ -125,23 +114,34 @@ export const ContactsComponent = ({ setPageLoading, isEdit }: Props) => {
 
   const closeMessage = useCallback(() => setMessage(null), []);
 
+  const isTableVisible = useMemo(() => {
+    if (isEdit) {
+      return true;
+    }
+
+    return (
+      !!contacts &&
+      (Object.keys(contacts) as Array<keyof ContactsInterface>).some((key) => contacts[key])
+    );
+  }, [isEdit, contacts]);
+
   return (
     <NavContent>
-      {!!contacts && (
+      {isTableVisible ? (
         <>
           <table className={styles.table}>
             <tbody>
-              {(Object.keys(contacts) as Array<keyof ContactsInterface>).map((key) => (
-                <tr key={key}>
-                  <td>{CONTACTS_MAP[key]}:</td>
-                  <td>
-                    {renderValue(
-                      key,
-                      !!contacts && (key === 'cv' ? contacts[key].en : contacts[key]),
-                    )}
-                  </td>
-                </tr>
-              ))}
+              {(Object.keys(CONTACTS_MAP) as Array<keyof ContactsInterface>).map((key) => {
+                const value = contacts ? contacts[key] : '';
+                return (
+                  !!(isEdit || value) && (
+                    <tr key={key}>
+                      <td>{CONTACTS_MAP[key]}:</td>
+                      <td>{renderValue(key, value)}</td>
+                    </tr>
+                  )
+                );
+              })}
             </tbody>
           </table>
           {isEdit && (
@@ -156,6 +156,8 @@ export const ContactsComponent = ({ setPageLoading, isEdit }: Props) => {
           )}
           <FadingMessage message={message?.text} type={message?.type} close={closeMessage} />
         </>
+      ) : (
+        <p className="p1 text-center">No data yet.</p>
       )}
     </NavContent>
   );

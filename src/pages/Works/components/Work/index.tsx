@@ -1,4 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
+import { connect } from 'react-redux';
 
 import { Work } from 'api/Works';
 import { API } from 'api';
@@ -6,6 +7,8 @@ import { FadingMessage } from 'components/FadingMessage';
 import { Spinner } from 'components/Spinner';
 import { TextInput } from 'components/TextInput';
 import { FadingMessageTypes } from 'models/Message';
+import { AppState } from 'store';
+import { Languages } from 'store/app/reducers';
 import styles from './styles.module.scss';
 
 interface Props {
@@ -13,6 +16,7 @@ interface Props {
   _id: string | null;
   address?: string;
   descEn: string;
+  descDe: string;
   imageSrc: string;
   imageFile?: File;
   index: number;
@@ -25,14 +29,16 @@ interface Props {
   changeOrder: (id: string, isMoveUp: boolean) => void;
   getWorks: () => void;
   deleteWorkWithoutId: () => void;
+  language: Languages;
 }
 
-export const WorkItem = (props: Props) => {
+const WorkItemComponent = (props: Props) => {
   const {
     isEdit,
     _id,
     address,
     descEn,
+    descDe,
     imageSrc,
     imageFile,
     index,
@@ -45,6 +51,7 @@ export const WorkItem = (props: Props) => {
     changeOrder,
     getWorks,
     deleteWorkWithoutId,
+    language,
   } = props;
 
   const origin =
@@ -53,7 +60,10 @@ export const WorkItem = (props: Props) => {
   const [message, setMessage] = useState<{ text: string; type: FadingMessageTypes } | null>(null);
   const [isLoading, setLoading] = useState<boolean>(false);
 
-  const descLines = useMemo(() => descEn.split('\n'), [descEn]);
+  const descLines = useMemo(() => {
+    const desc = language === 'en' ? descEn : descDe;
+    return desc?.split('\n');
+  }, [language, descEn, descDe]);
 
   const onImageChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -92,10 +102,11 @@ export const WorkItem = (props: Props) => {
     () => ({
       ...(address !== initialWork?.address ? { address } : {}),
       ...(descEn !== initialWork?.descEn ? { descEn } : {}),
+      ...(descDe !== initialWork?.descDe ? { descDe } : {}),
       ...(imageFile ? { imageFile } : {}),
       ...(repo !== initialWork?.repo ? { repo } : {}),
     }),
-    [initialWork, address, descEn, imageFile, repo],
+    [initialWork, address, descEn, descDe, imageFile, repo],
   );
 
   const isWorkChanged = useMemo(() => !!Object.keys(changedWork).length, [changedWork]);
@@ -106,11 +117,11 @@ export const WorkItem = (props: Props) => {
       const response = await API.Works.updateWorks({ _id, ...changedWork });
       let type: FadingMessageTypes | undefined;
       let text: string;
-      if (response.status === 200 && response.data.work) {
+      if (response.status === 200 && response.data.data) {
         type = 'success';
         text = response.data.message;
         setWork({ imageFile: undefined });
-        setInitialWork(response.data.work);
+        setInitialWork(response.data.data);
       } else {
         type = 'error';
         text = response.data.error?.message || `Error status: ${response.status}`;
@@ -125,25 +136,25 @@ export const WorkItem = (props: Props) => {
     const response = await API.Works.updateWorks({
       address,
       descEn,
-      descRu: '',
+      descDe,
       imageFile,
       index,
       repo,
     });
     let type: FadingMessageTypes | undefined;
     let text: string;
-    if (response.status === 200 && response.data.work) {
+    if (response.status === 200 && response.data.data) {
       type = 'success';
       text = response.data.message;
-      setWork({ ...response.data.work, imageFile: undefined });
-      setInitialWork(response.data.work);
+      setWork({ ...response.data.data, imageFile: undefined });
+      setInitialWork(response.data.data);
     } else {
       type = 'error';
       text = response.data.error?.message || '';
     }
     setLoading(false);
     setMessage({ text, type });
-  }, [address, descEn, imageFile, index, repo, setWork, setInitialWork]);
+  }, [address, descEn, descDe, imageFile, index, repo, setWork, setInitialWork]);
 
   const closeMessage = useCallback(() => {
     setMessage(null);
@@ -159,8 +170,8 @@ export const WorkItem = (props: Props) => {
   );
 
   const isWorkEmpty = useMemo(
-    () => !(imageSrc || imageFile) || !descEn,
-    [imageSrc, imageFile, descEn],
+    () => !(imageSrc || imageFile) || !descEn || !descDe,
+    [imageSrc, imageFile, descEn, descDe],
   );
 
   const isSaveDisabled = useMemo(
@@ -173,14 +184,13 @@ export const WorkItem = (props: Props) => {
     if (_id && window.confirm(`Work with id ${_id} will be deleted.`)) {
       setLoading(true);
       const response = await API.Works.deleteWork(_id);
-      let type: FadingMessageTypes | undefined;
-      let text: string;
       if (response.status === 200) {
         getWorks();
       } else {
-        type = 'error';
-        text = response.data.error?.message || '';
-        setMessage({ text, type });
+        setMessage({
+          text: response.data.error?.message || `Error status ${response.status}`,
+          type: 'error',
+        });
         setLoading(false);
       }
     } else {
@@ -202,14 +212,16 @@ export const WorkItem = (props: Props) => {
       )}
       {!isEdit ? (
         <>
-          <p className={`p1 ${styles.desc}`}>
-            {descLines.map((line, lineIndex) => (
-              <React.Fragment key={line}>
-                {line}
-                {lineIndex < descLines.length - 1 ? <br /> : ''}
-              </React.Fragment>
-            ))}
-          </p>
+          {descLines && (
+            <p className={`p1 ${styles.desc}`}>
+              {descLines.map((line, lineIndex, array) => (
+                <React.Fragment key={line}>
+                  {line}
+                  {lineIndex < array.length - 1 ? <br /> : ''}
+                </React.Fragment>
+              ))}
+            </p>
+          )}
           {address && (
             <a target="_blank" href={address} rel="noreferrer">
               Site Link
@@ -225,10 +237,18 @@ export const WorkItem = (props: Props) => {
         <>
           <TextInput
             className={styles.input}
-            label="Edit Description"
-            placeholder="description"
+            label="Edit English Description"
+            placeholder="english description"
             value={descEn}
             onChange={onChange('descEn')}
+            isTextarea
+          />
+          <TextInput
+            className={styles.input}
+            label="Edit German Description"
+            placeholder="german description"
+            value={descDe}
+            onChange={onChange('descDe')}
             isTextarea
           />
           <TextInput
@@ -294,3 +314,9 @@ export const WorkItem = (props: Props) => {
     </div>
   );
 };
+
+const mapState = (state: AppState) => ({
+  language: state.app.language,
+});
+
+export const WorkItem = connect(mapState)(WorkItemComponent);
