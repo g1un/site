@@ -5,6 +5,7 @@ import { Work } from 'api/Works';
 import { Spinner } from 'components/Spinner';
 import { Languages } from 'store/app/reducers';
 import { AppState } from 'store';
+import { getText } from 'languages/getText';
 import { WorkEdit } from './components/WorkEdit';
 import styles from './styles.module.scss';
 
@@ -87,18 +88,24 @@ const WorkItemComponent = (props: Props) => {
     return imageSrc ? `${origin}/${imageSrc}` : '';
   }, [origin, imageSrc]);
 
+  const imageClassName = useMemo(
+    () => `${styles.image} ${isEdit ? `${styles.Edit} ${!imageSrcUrl ? styles.Add : ''}` : ''}`,
+    [isEdit, imageSrcUrl],
+  );
+
   return (
     <div className={styles.container}>
-      {!isEdit ? (
-        <div className={styles.image}>
+      <div className={imageClassName}>
+        {!isEdit ? (
           <img src={`${origin}/${imageSrc}`} alt="" />
-        </div>
-      ) : (
-        <label className={`${styles.image} ${styles.Edit} ${!imageSrcUrl ? styles.Add : ''}`}>
-          <input className={styles.imageInput} type="file" onChange={onImageChange} />
-          {imageSrcUrl && <img src={imageSrcUrl} alt="" />}
-        </label>
-      )}
+        ) : (
+          <label className={styles.imageLabel}>
+            <input className={styles.imageInput} type="file" onChange={onImageChange} />
+            {imageSrcUrl && <img src={imageSrcUrl} alt="" />}
+            <span className={styles.imageTitle}>{getText('Add Image')}</span>
+          </label>
+        )}
+      </div>
       {!isEdit ? (
         <>
           {descLines && (
@@ -113,7 +120,7 @@ const WorkItemComponent = (props: Props) => {
           )}
           {address && (
             <a target="_blank" href={address} rel="noreferrer">
-              Site Link
+              {getText('Site Link')}
             </a>
           )}
           {repo && (

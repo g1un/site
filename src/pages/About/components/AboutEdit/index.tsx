@@ -7,13 +7,12 @@ import { appActions, SetPageLoading } from 'store/app/actions';
 import { FadingMessage } from 'components/FadingMessage';
 import { TextInput } from 'components/TextInput';
 import { FadingMessageTypes } from 'models/Message';
-import { AppState } from 'store';
 import { Languages } from 'store/app/reducers';
 import { SUPPORTED_LANGUAGES } from 'components/consts';
 import { LIBRARY } from 'languages/library';
+import { getText } from 'languages/getText';
 
 interface Props extends SetPageLoading {
-  language?: Languages;
   skills: Skills | null;
   setSkills: (skills: SetStateAction<Skills | null>) => void;
   initialSkills: Skills | null;
@@ -21,7 +20,7 @@ interface Props extends SetPageLoading {
 }
 
 const AboutEditComponent = (props: Props) => {
-  const { setPageLoading, language = 'en', skills, setSkills, initialSkills, getSkills } = props;
+  const { setPageLoading, skills, setSkills, initialSkills, getSkills } = props;
 
   const [message, setMessage] = useState<{ text: string; type?: FadingMessageTypes } | null>(null);
 
@@ -64,7 +63,7 @@ const AboutEditComponent = (props: Props) => {
           key={lang}
           className={index < SUPPORTED_LANGUAGES.length - 1 ? 'mb-3' : ''}
           label={LIBRARY.Skills[lang]}
-          placeholder={LIBRARY.skills[lang]}
+          placeholder={LIBRARY.Skills[lang]}
           value={(skills && skills[lang]) || ''}
           onChange={onChange(lang)}
           isTextarea
@@ -77,19 +76,15 @@ const AboutEditComponent = (props: Props) => {
         onClick={saveSkills}
         disabled={isDisabled}
       >
-        {LIBRARY.Save[language]}
+        {getText('Save')}
       </button>
       <FadingMessage message={message?.text} type={message?.type} close={closeMessage} />
     </>
   );
 };
 
-const mapState = (state: AppState) => ({
-  language: state.app.language,
-});
-
 const mapActions = {
   setPageLoading: appActions.setPageLoading,
 };
 
-export const AboutEdit = connect(mapState, mapActions)(AboutEditComponent);
+export const AboutEdit = connect(null, mapActions)(AboutEditComponent);

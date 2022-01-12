@@ -5,6 +5,7 @@ import { API } from 'api';
 import { FadingMessage } from 'components/FadingMessage';
 import { TextInput } from 'components/TextInput';
 import { FadingMessageTypes } from 'models/Message';
+import { getText } from 'languages/getText';
 import styles from './styles.module.scss';
 
 interface Props {
@@ -140,9 +141,11 @@ export const WorkEdit = (props: Props) => {
     [isWorkChanged, isWorkEmpty, isLoading],
   );
 
+  const confirmText = `${getText('Work with id')} ${_id} ${getText('will be deleted.')}`;
+
   const deleteWork = useCallback(async () => {
     /* eslint-disable-next-line no-alert */
-    if (_id && window.confirm(`Work with id ${_id} will be deleted.`)) {
+    if (_id && window.confirm(confirmText)) {
       setLoading(true);
       const response = await API.Works.deleteWork(_id);
       if (response.status === 200) {
@@ -157,37 +160,37 @@ export const WorkEdit = (props: Props) => {
     } else {
       deleteWorkWithoutId();
     }
-  }, [_id, setLoading, getWorks, deleteWorkWithoutId]);
+  }, [_id, confirmText, setLoading, getWorks, deleteWorkWithoutId]);
 
   return (
     <>
       <TextInput
         className="mb-3"
-        label="Edit English Description"
-        placeholder="english description"
+        label={getText('Edit English Description')}
+        placeholder={getText('English Description')}
         value={descEn}
         onChange={onChange('descEn')}
         isTextarea
       />
       <TextInput
         className="mb-3"
-        label="Edit German Description"
-        placeholder="german description"
+        label={getText('Edit German Description')}
+        placeholder={getText('German Description')}
         value={descDe}
         onChange={onChange('descDe')}
         isTextarea
       />
       <TextInput
         className="mb-3"
-        label="Edit Site Address"
-        placeholder="site address"
+        label={getText('Edit Site Address')}
+        placeholder={getText('Site Address')}
         value={address}
         onChange={onChange('address')}
       />
       <TextInput
         className="mb-3"
-        label="Edit Repository Link"
-        placeholder="repository link"
+        label={getText('Edit Repository Link')}
+        placeholder={getText('Repository Link')}
         value={repo}
         onChange={onChange('repo')}
       />
@@ -197,7 +200,7 @@ export const WorkEdit = (props: Props) => {
             className="btn _round"
             type="button"
             disabled={!_id || isFirst || isLoading}
-            title="Order will be saved immediately!"
+            title={getText('Order will be saved immediately!')}
             onClick={move(true)}
           >
             &uarr;
@@ -206,14 +209,14 @@ export const WorkEdit = (props: Props) => {
             className="btn _round"
             type="button"
             disabled={!_id || isLast || isLoading}
-            title="Order will be saved immediately!"
+            title={getText('Order will be saved immediately!')}
             onClick={move(false)}
           >
             &darr;
           </button>
         </div>
         <button className="btn _red" type="button" onClick={deleteWork}>
-          Delete
+          {getText('Delete')}
         </button>
         <button
           className="btn _green ms-3"
@@ -221,7 +224,7 @@ export const WorkEdit = (props: Props) => {
           disabled={isSaveDisabled}
           onClick={_id ? updateWork : createNewWork}
         >
-          Save
+          {getText('Save')}
         </button>
       </div>
       <FadingMessage message={message?.text} type={message?.type} close={closeMessage} />

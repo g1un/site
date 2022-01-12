@@ -6,6 +6,7 @@ import { API } from 'api';
 import { appActions, SetPageLoading } from 'store/app/actions';
 import { FadingMessage } from 'components/FadingMessage';
 import { FadingMessageTypes, Message } from 'models/Message';
+import { getText } from 'languages/getText';
 import { ContactsTable } from '../ContactsTable';
 
 interface Props extends SetPageLoading {
@@ -81,7 +82,7 @@ export const ContactsEditComponent = (props: Props) => {
         onClick={saveContacts}
         disabled={isDisabled}
       >
-        Save
+        {getText('Save')}
       </button>
       <FadingMessage message={message?.text} type={message?.type} close={closeMessage} />
     </>

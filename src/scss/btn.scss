@@ -38,7 +38,7 @@
   }
 
   &._red {
-    background-color: rgba($red, 0.67);
+    background-color: rgba($red, 0.8);
     color: $white;
 
     &:hover {
@@ -47,7 +47,7 @@
   }
 
   &[disabled] {
-    opacity: 0.5;
+    opacity: 0.33;
     pointer-events: none;
   }
 }

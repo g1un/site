@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import { Spinner } from 'components/Spinner';
 import { AppState } from 'store';
 import { appActions, SetPageLoading } from 'store/app/actions';
+import { getText } from 'languages/getText';
 import styles from './styles.module.scss';
 
 interface Props extends SetPageLoading {
@@ -48,10 +49,10 @@ const NavItemComponent = (props: Props) => {
             className={`${styles.link} ${isActive ? styles.Active : ''}`}
             onTransitionEnd={(e) => e.stopPropagation()}
           >
-            {title}
+            {getText(title)}
           </NavLink>
         ) : (
-          <h2 className={`${styles.link} ${styles.Active}`}>{title}</h2>
+          <h2 className={`${styles.link} ${styles.Active}`}>{getText(title)}</h2>
         )}
       </header>
       {isActive && (

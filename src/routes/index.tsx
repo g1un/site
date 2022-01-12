@@ -22,7 +22,7 @@ export const routes: Route[] = [
   {
     path: '/works',
     component: <Works />,
-    title: 'Works',
+    title: 'Portfolio',
   },
   {
     path: '/contacts',
@@ -52,7 +52,7 @@ export const routes: Route[] = [
         <Works isEdit />
       </Admin>
     ),
-    title: 'Edit Works',
+    title: 'Edit Portfolio',
     isPrivate: true,
   },
   {

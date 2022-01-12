@@ -6,6 +6,7 @@ import { API } from 'api';
 import { authActions, SetAuthorized } from 'store/auth/actions';
 import { FadingMessage } from 'components/FadingMessage';
 import { TextInput } from 'components/TextInput';
+import { getText } from 'languages/getText';
 import styles from './styles.module.scss';
 
 type Props = SetAuthorized;
@@ -55,24 +56,24 @@ const LoginComponent = (props: Props) => {
   return (
     <NavContent>
       <form className={styles.container} onSubmit={onSubmit}>
-        <h2 className={`h2 ${styles.title}`}>Login</h2>
+        <h2 className={`h2 ${styles.title}`}>{getText('Login')}</h2>
         <TextInput
           className={styles.input}
           label="Email"
-          placeholder="email"
+          placeholder="Email"
           value={credentials.email}
           onChange={onInputChange('email')}
         />
         <TextInput
           className={styles.input}
           type="password"
-          label="Password"
-          placeholder="password"
+          label={getText('Password')}
+          placeholder={getText('Password')}
           value={credentials.password}
           onChange={onInputChange('password')}
         />
         <button className="btn" type="submit" disabled={isDisabled}>
-          Login
+          {getText('log in')}
         </button>
         <FadingMessage message={error} type="error" close={hideError} />
       </form>

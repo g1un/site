@@ -7,7 +7,7 @@ import styles from './styles.module.scss';
 
 export const CONTACTS_MAP: { [key in keyof Contacts]: string } = {
   email: 'Email',
-  tel: 'Phone',
+  tel: 'Tel',
   cv: 'CV',
   github: 'Github',
 };

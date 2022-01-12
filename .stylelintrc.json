@@ -4,6 +4,14 @@
     "max-nesting-depth": null,
     "selector-class-pattern": null,
     "scss/at-mixin-pattern": null,
-    "order/properties-alphabetical-order": null
+    "order/properties-alphabetical-order": null,
+    "order/order": [
+      [
+        "custom-properties",
+        "dollar-variables",
+        "declarations",
+        "rules"
+      ]
+    ]
   }
 }
