@@ -3,8 +3,8 @@ import { GetResponse, UpdateResponse } from 'models/Response';
 import { instance } from './Instance';
 
 export interface Skills {
-  de?: string;
-  en?: string;
+  de: string;
+  en: string;
 }
 
 export const getSkills = async (): Promise<Skills> => {
