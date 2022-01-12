@@ -1,0 +1,30 @@
+@import 'src/scss/variables';
+@import 'src/scss/mixins';
+
+.buttons {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.arrows {
+  display: flex;
+  margin-right: auto;
+
+  button {
+    &:not(:last-child) {
+      margin-right: 1rem;
+    }
+  }
+}
+
+.spinner {
+  align-items: center;
+  background-color: rgba($white, 0.67);
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+}

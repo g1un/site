@@ -2,13 +2,10 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { connect } from 'react-redux';
 
 import { Work } from 'api/Works';
-import { API } from 'api';
-import { FadingMessage } from 'components/FadingMessage';
 import { Spinner } from 'components/Spinner';
-import { TextInput } from 'components/TextInput';
-import { FadingMessageTypes } from 'models/Message';
-import { AppState } from 'store';
 import { Languages } from 'store/app/reducers';
+import { AppState } from 'store';
+import { WorkEdit } from './components/WorkEdit';
 import styles from './styles.module.scss';
 
 interface Props {
@@ -57,7 +54,6 @@ const WorkItemComponent = (props: Props) => {
   const origin =
     process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : window.location.origin;
 
-  const [message, setMessage] = useState<{ text: string; type: FadingMessageTypes } | null>(null);
   const [isLoading, setLoading] = useState<boolean>(false);
 
   const descLines = useMemo(() => {
@@ -91,113 +87,6 @@ const WorkItemComponent = (props: Props) => {
     return imageSrc ? `${origin}/${imageSrc}` : '';
   }, [origin, imageSrc]);
 
-  const onChange = useCallback(
-    (name: keyof Work) => (value: string) => {
-      setWork({ [name]: value });
-    },
-    [setWork],
-  );
-
-  const changedWork = useMemo(
-    () => ({
-      ...(address !== initialWork?.address ? { address } : {}),
-      ...(descEn !== initialWork?.descEn ? { descEn } : {}),
-      ...(descDe !== initialWork?.descDe ? { descDe } : {}),
-      ...(imageFile ? { imageFile } : {}),
-      ...(repo !== initialWork?.repo ? { repo } : {}),
-    }),
-    [initialWork, address, descEn, descDe, imageFile, repo],
-  );
-
-  const isWorkChanged = useMemo(() => !!Object.keys(changedWork).length, [changedWork]);
-
-  const updateWork = useCallback(async () => {
-    if (isWorkChanged) {
-      setLoading(true);
-      const response = await API.Works.updateWorks({ _id, ...changedWork });
-      let type: FadingMessageTypes | undefined;
-      let text: string;
-      if (response.status === 200 && response.data.data) {
-        type = 'success';
-        text = response.data.message;
-        setWork({ imageFile: undefined });
-        setInitialWork(response.data.data);
-      } else {
-        type = 'error';
-        text = response.data.error?.message || `Error status: ${response.status}`;
-      }
-      setLoading(false);
-      setMessage({ text, type });
-    }
-  }, [isWorkChanged, _id, changedWork, setWork, setInitialWork]);
-
-  const createNewWork = useCallback(async () => {
-    setLoading(true);
-    const response = await API.Works.updateWorks({
-      address,
-      descEn,
-      descDe,
-      imageFile,
-      index,
-      repo,
-    });
-    let type: FadingMessageTypes | undefined;
-    let text: string;
-    if (response.status === 200 && response.data.data) {
-      type = 'success';
-      text = response.data.message;
-      setWork({ ...response.data.data, imageFile: undefined });
-      setInitialWork(response.data.data);
-    } else {
-      type = 'error';
-      text = response.data.error?.message || '';
-    }
-    setLoading(false);
-    setMessage({ text, type });
-  }, [address, descEn, descDe, imageFile, index, repo, setWork, setInitialWork]);
-
-  const closeMessage = useCallback(() => {
-    setMessage(null);
-  }, []);
-
-  const move = useCallback(
-    (isMoveUp: boolean) => () => {
-      if (_id) {
-        changeOrder(_id, isMoveUp);
-      }
-    },
-    [changeOrder, _id],
-  );
-
-  const isWorkEmpty = useMemo(
-    () => !(imageSrc || imageFile) || !descEn || !descDe,
-    [imageSrc, imageFile, descEn, descDe],
-  );
-
-  const isSaveDisabled = useMemo(
-    () => !isWorkChanged || isWorkEmpty || isLoading,
-    [isWorkChanged, isWorkEmpty, isLoading],
-  );
-
-  const deleteWork = useCallback(async () => {
-    /* eslint-disable-next-line no-alert */
-    if (_id && window.confirm(`Work with id ${_id} will be deleted.`)) {
-      setLoading(true);
-      const response = await API.Works.deleteWork(_id);
-      if (response.status === 200) {
-        getWorks();
-      } else {
-        setMessage({
-          text: response.data.error?.message || `Error status ${response.status}`,
-          type: 'error',
-        });
-        setLoading(false);
-      }
-    } else {
-      deleteWorkWithoutId();
-    }
-  }, [_id, getWorks, deleteWorkWithoutId]);
-
   return (
     <div className={styles.container}>
       {!isEdit ? (
@@ -213,7 +102,7 @@ const WorkItemComponent = (props: Props) => {
       {!isEdit ? (
         <>
           {descLines && (
-            <p className={`p1 ${styles.desc}`}>
+            <p className="p1 mb-3">
               {descLines.map((line, lineIndex, array) => (
                 <React.Fragment key={line}>
                   {line}
@@ -234,77 +123,26 @@ const WorkItemComponent = (props: Props) => {
           )}
         </>
       ) : (
-        <>
-          <TextInput
-            className={styles.input}
-            label="Edit English Description"
-            placeholder="english description"
-            value={descEn}
-            onChange={onChange('descEn')}
-            isTextarea
-          />
-          <TextInput
-            className={styles.input}
-            label="Edit German Description"
-            placeholder="german description"
-            value={descDe}
-            onChange={onChange('descDe')}
-            isTextarea
-          />
-          <TextInput
-            className={styles.input}
-            label="Edit Site Address"
-            placeholder="site address"
-            value={address}
-            onChange={onChange('address')}
-          />
-          <TextInput
-            className={styles.input}
-            label="Edit Repository Link"
-            placeholder="repository link"
-            value={repo}
-            onChange={onChange('repo')}
-          />
-          <div className={styles.buttons}>
-            <div className={styles.arrows}>
-              <button
-                className="btn _round"
-                type="button"
-                disabled={!_id || isFirst || isLoading}
-                title="Order will be saved immediately!"
-                onClick={move(true)}
-              >
-                &uarr;
-              </button>
-              <button
-                className="btn _round"
-                type="button"
-                disabled={!_id || isLast || isLoading}
-                title="Order will be saved immediately!"
-                onClick={move(false)}
-              >
-                &darr;
-              </button>
-            </div>
-            <button
-              className="btn _red"
-              type="button"
-              // disabled={isSaveDisabled}
-              onClick={deleteWork}
-            >
-              Delete
-            </button>
-            <button
-              className={`btn _green ${styles.save}`}
-              type="button"
-              disabled={isSaveDisabled}
-              onClick={_id ? updateWork : createNewWork}
-            >
-              Save
-            </button>
-          </div>
-          <FadingMessage message={message?.text} type={message?.type} close={closeMessage} />
-        </>
+        <WorkEdit
+          _id={_id}
+          address={address}
+          descEn={descEn}
+          descDe={descDe}
+          imageSrc={imageSrc}
+          imageFile={imageFile}
+          index={index}
+          repo={repo}
+          setWork={setWork}
+          initialWork={initialWork}
+          setInitialWork={setInitialWork}
+          isFirst={isFirst}
+          isLast={isLast}
+          changeOrder={changeOrder}
+          getWorks={getWorks}
+          deleteWorkWithoutId={deleteWorkWithoutId}
+          isLoading={isLoading}
+          setLoading={setLoading}
+        />
       )}
       {isLoading && (
         <div className={styles.spinner}>
