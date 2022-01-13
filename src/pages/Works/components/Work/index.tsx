@@ -52,9 +52,6 @@ const WorkItemComponent = (props: Props) => {
     language,
   } = props;
 
-  const origin =
-    process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : window.location.origin;
-
   const [isLoading, setLoading] = useState<boolean>(false);
 
   const descLines = useMemo(() => {
@@ -80,28 +77,20 @@ const WorkItemComponent = (props: Props) => {
     [setWork],
   );
 
-  const imageSrcUrl = useMemo(() => {
-    // check if is base64 string
-    if (/data:image\/[^;]+;base64[^"]+/i.test(imageSrc)) {
-      return imageSrc;
-    }
-    return imageSrc ? `${origin}/${imageSrc}` : '';
-  }, [origin, imageSrc]);
-
   const imageClassName = useMemo(
-    () => `${styles.image} ${isEdit ? `${styles.Edit} ${!imageSrcUrl ? styles.Add : ''}` : ''}`,
-    [isEdit, imageSrcUrl],
+    () => `${styles.image} ${isEdit ? `${styles.Edit} ${!imageSrc ? styles.Add : ''}` : ''}`,
+    [isEdit, imageSrc],
   );
 
   return (
     <div className={styles.container}>
       <div className={imageClassName}>
         {!isEdit ? (
-          <img src={`${origin}/${imageSrc}`} alt="" />
+          <img src={imageSrc} alt="" />
         ) : (
           <label className={styles.imageLabel}>
             <input className={styles.imageInput} type="file" onChange={onImageChange} />
-            {imageSrcUrl && <img src={imageSrcUrl} alt="" />}
+            {imageSrc && <img src={imageSrc} alt="" />}
             <span className={styles.imageTitle}>{getText('Add Image')}</span>
           </label>
         )}

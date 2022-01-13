@@ -10,6 +10,7 @@ import { Languages } from 'store/app/reducers';
 import { SUPPORTED_LANGUAGES } from 'components/consts';
 import { Placeholder } from 'components/Placeholder';
 import { AboutEdit } from './components/AboutEdit';
+import styles from './styles.module.scss';
 
 interface Props extends SetPageLoading {
   isEdit?: boolean;
@@ -39,33 +40,17 @@ const AboutComponent = (props: Props) => {
     [skills],
   );
 
-  const skillsText: React.ReactElement | null = useMemo(() => {
-    if (skills && skills[language]) {
-      return (
-        <>
-          {(skills[language] as string).split('\n').map((row, index, array) => (
-            <React.Fragment key={row}>
-              {row}
-              {index < array.length - 1 ? <br /> : ''}
-            </React.Fragment>
-          ))}
-        </>
-      );
-    }
-    return null;
-  }, [skills, language]);
-
   const renderSkills = useCallback(() => {
     if (!isAnyLanguageSet) {
       return <Placeholder type="noData" />;
     }
 
-    if (!skillsText) {
+    if (!(skills && skills[language])) {
       return <Placeholder type="noLangData" />;
     }
 
-    return <p>{skillsText}</p>;
-  }, [isAnyLanguageSet, skillsText]);
+    return <p className={`p1 ${styles.p}`}>{skills[language]}</p>;
+  }, [isAnyLanguageSet, skills, language]);
 
   return (
     <NavContent>
