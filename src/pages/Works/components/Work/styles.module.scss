@@ -27,60 +27,10 @@
   position: relative;
   width: 20rem;
 
-  &.Edit,
-  &.Add {
-    .imageTitle {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      transition: background-color 0.25s, color 0.25s;
-      @include p1-700();
-      color: transparent;
-    }
-
-    &:hover {
-      .imageTitle {
-        background-color: rgba($white, 0.67);
-        color: $black;
-      }
-    }
-  }
-
-  &.Add {
-    .imageTitle {
-      background-color: rgba($white, 0.67);
-      color: $black;
-    }
-  }
-
   img {
     height: 100%;
     object-fit: cover;
     width: 100%;
-  }
-
-  &Label {
-    display: block;
-    width: 100%;
-    height: 100%;
-    cursor: pointer;
-  }
-
-  &Input {
-    bottom: 0;
-    left: 0;
-    opacity: 0;
-    pointer-events: none;
-    position: absolute;
-    right: 0;
-    top: 0;
-    width: 100%;
-    z-index: 1;
   }
 }
 

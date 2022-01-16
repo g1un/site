@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { connect } from 'react-redux';
 
 import { Work } from 'api/Works';
@@ -59,44 +59,13 @@ const WorkItemComponent = (props: Props) => {
     return desc?.split('\n');
   }, [language, descEn, descDe]);
 
-  const onImageChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      if (event.target.files) {
-        const reader = new FileReader();
-        reader.onload = ({ target }) => {
-          if (target?.result) {
-            setWork({
-              imageSrc: target.result as string,
-              imageFile: (event.target.files as FileList)[0],
-            });
-          }
-        };
-        reader.readAsDataURL(event.target.files[0]);
-      }
-    },
-    [setWork],
-  );
-
-  const imageClassName = useMemo(
-    () => `${styles.image} ${isEdit ? `${styles.Edit} ${!imageSrc ? styles.Add : ''}` : ''}`,
-    [isEdit, imageSrc],
-  );
-
   return (
     <div className={styles.container}>
-      <div className={imageClassName}>
-        {!isEdit ? (
-          <img src={imageSrc} alt="" />
-        ) : (
-          <label className={styles.imageLabel}>
-            <input className={styles.imageInput} type="file" onChange={onImageChange} />
-            {imageSrc && <img src={imageSrc} alt="" />}
-            <span className={styles.imageTitle}>{getText('Add Image')}</span>
-          </label>
-        )}
-      </div>
       {!isEdit ? (
         <>
+          <div className={styles.image}>
+            <img src={imageSrc} alt="" />
+          </div>
           {descLines && (
             <p className="p1 mb-3">
               {descLines.map((line, lineIndex, array) => (

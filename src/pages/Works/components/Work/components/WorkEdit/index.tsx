@@ -162,8 +162,45 @@ export const WorkEdit = (props: Props) => {
     }
   }, [_id, confirmText, setLoading, getWorks, deleteWorkWithoutId]);
 
+  const onImageChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      if (event.target.files?.length) {
+        const file = event.target.files[0];
+
+        if (!/.(jpg|jpeg|png|gif)$/i.test(file.type)) {
+          setMessage({ text: 'Only jpg, jpeg, png, gif are allowed.', type: 'error' });
+          return;
+        }
+
+        if (file.size > 5 * 1024 * 1024) {
+          setMessage({ text: 'File size must not be bigger than 5Mb.', type: 'error' });
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = ({ target }) => {
+          if (target?.result) {
+            setWork({
+              imageSrc: target.result as string,
+              imageFile: (event.target.files as FileList)[0],
+            });
+          }
+        };
+        reader.readAsDataURL(event.target.files[0]);
+      }
+    },
+    [setWork],
+  );
+
   return (
     <>
+      <div className={`${styles.image} ${!imageSrc ? styles.Add : ''}`}>
+        <label className={styles.imageLabel}>
+          <input className={styles.imageInput} type="file" onChange={onImageChange} />
+          {imageSrc && <img src={imageSrc} alt="" />}
+          <span className={styles.imageTitle}>{getText('Add Image')}</span>
+        </label>
+      </div>
       <TextInput
         className="mb-3"
         label={getText('Edit English Description')}
